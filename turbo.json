@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
+  "globalEnv": ["APP_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "env": ["APP_ENV"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "env:generate": {
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": ["env.d.ts"]
+    },
+    "env:validate": {
+      "inputs": ["$TURBO_DEFAULT$"]
+    }
+  }
+}
