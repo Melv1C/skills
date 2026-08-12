@@ -1,5 +1,6 @@
 {
   "name": "@repo/ui",
+  "version": "0.0.0",
   "exports": {
     "./*": "./src/*.tsx",
     "./base.css": "./src/styles/base.css",
