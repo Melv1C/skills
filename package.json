@@ -1,0 +1,52 @@
+{
+  "name": "skills",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "check": "oxfmt --check && oxlint",
+    "deps": "ncu",
+    "dev": "turbo run dev",
+    "docker:db": "docker compose up -d postgres",
+    "docker:db:down": "docker compose down",
+    "docker:deps": "docker compose up -d",
+    "docker:deps:down": "docker compose down",
+    "env:generate": "turbo run env:generate",
+    "env:validate": "turbo run env:validate",
+    "format": "oxfmt",
+    "lint": "oxlint",
+    "prisma:format": "bun --filter backend prisma:format",
+    "prisma:generate": "bun --filter backend prisma:generate",
+    "prisma:migrate": "bun --filter backend prisma:migrate",
+    "prisma:migrate:deploy": "bun --filter backend prisma:migrate:deploy",
+    "prisma:validate": "bun --filter backend prisma:validate",
+    "release:prepare": "changeset",
+    "release:push": "./scripts/release-push.sh",
+    "release:version": "./scripts/release-version.sh"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^3.0.0",
+    "eslint-plugin-zod": "^4.9.1",
+    "npm-check-updates": "^23.0.2",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "oxlint-tsgolint": "^7.0.2001",
+    "prettier": "^3.9.6",
+    "turbo": "^2.10.9",
+    "typescript": "7.0.2",
+    "varlock": "^1.16.1"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "bun",
+      "version": "1.3.14"
+    }
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

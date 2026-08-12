@@ -1,0 +1,80 @@
+name: Staging Deployment
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ci:
+    name: CI
+    uses: ./.github/workflows/ci.yml
+
+  docker:
+    name: Build & Push ${{ matrix.app }} Staging Image
+    needs: ci
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip staging]')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [backend, frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Read package.json name
+        id: read-name
+        run: |
+          APP_NAME=$(jq -r '.name' ./package.json)
+          echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Build and push ${{ matrix.app }} staging image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/${{ matrix.app }}/Dockerfile
+          push: true
+          build-args: |
+            APP_ENV=staging
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.read-name.outputs.app_name }}-${{ matrix.app }}:staging
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.read-name.outputs.app_name }}-${{ matrix.app }}:${{ github.sha }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy ${{ matrix.app }} to Staging
+    needs: docker
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip staging]')
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [backend, frontend]
+        include:
+          - app: backend
+            app_id_secret: DOKPLOY_STAGING_BACKEND_APP_ID
+          - app: frontend
+            app_id_secret: DOKPLOY_STAGING_FRONTEND_APP_ID
+
+    steps:
+      - name: Trigger Dokploy Staging ${{ matrix.app }} Deployment
+        run: |
+          curl -X 'POST' \
+          'https://${{ secrets.DOKPLOY_DOMAIN }}/api/application.deploy' \
+          -H 'accept: application/json' \
+          -H 'x-api-key: ${{ secrets.DOKPLOY_API_KEY }}' \
+          -H 'Content-Type: application/json' \
+          -d '{
+               "applicationId": "${{ secrets[matrix.app_id_secret] }}"
+            }'

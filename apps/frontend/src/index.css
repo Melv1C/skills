@@ -1,0 +1,8 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@import "@repo/ui/base.css";
+@import "@repo/ui/default.css";
+
+@source '../node_modules/@repo/ui';
