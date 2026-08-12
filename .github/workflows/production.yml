@@ -1,0 +1,107 @@
+name: Production Deployment
+
+on:
+  push:
+    tags:
+      - "backend@*"
+      - "frontend@*"
+
+jobs:
+  detect-app:
+    name: Detect App from Tag
+    runs-on: ubuntu-latest
+    outputs:
+      app: ${{ steps.parse.outputs.app }}
+      version: ${{ steps.parse.outputs.version }}
+    steps:
+      - name: Parse tag
+        id: parse
+        run: |
+          TAG="${{ github.ref_name }}"
+          APP=$(echo "$TAG" | cut -d'@' -f1)
+          VERSION=$(echo "$TAG" | cut -d'@' -f2)
+          echo "app=$APP" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected app: $APP, version: $VERSION"
+
+  docker:
+    name: Build & Push Production Image
+    needs: [detect-app]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Read package.json name
+        id: read-name
+        run: |
+          APP_NAME=$(jq -r '.name' ./package.json)
+          echo "app_name=$APP_NAME" >> $GITHUB_OUTPUT
+
+      - name: Build and push backend production image
+        if: needs.detect-app.outputs.app == 'backend'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/${{ needs.detect-app.outputs.app }}/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.read-name.outputs.app_name }}-${{ needs.detect-app.outputs.app }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.read-name.outputs.app_name }}-${{ needs.detect-app.outputs.app }}:${{ needs.detect-app.outputs.version }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push web production image
+        if: needs.detect-app.outputs.app == 'frontend'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./apps/${{ needs.detect-app.outputs.app }}/Dockerfile
+          push: true
+          build-args: |
+            APP_ENV=production
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.read-name.outputs.app_name }}-${{ needs.detect-app.outputs.app }}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.read-name.outputs.app_name }}-${{ needs.detect-app.outputs.app }}:${{ needs.detect-app.outputs.version }}
+          platforms: linux/amd64
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Production
+    needs: [docker, detect-app]
+    runs-on: ubuntu-latest
+    env:
+      APP: ${{ needs.detect-app.outputs.app }}
+
+    steps:
+      - name: Trigger Dokploy Production Deployment
+        run: |
+          case "$APP" in
+            backend)
+              APP_ID="${{ secrets.DOKPLOY_PROD_BACKEND_APP_ID }}"
+              ;;
+            frontend)
+              APP_ID="${{ secrets.DOKPLOY_PROD_FRONTEND_APP_ID }}"
+              ;;
+          esac
+
+          curl -X 'POST' \
+          'https://${{ secrets.DOKPLOY_DOMAIN }}/api/application.deploy' \
+          -H 'accept: application/json' \
+          -H 'x-api-key: ${{ secrets.DOKPLOY_API_KEY }}' \
+          -H 'Content-Type: application/json' \
+          -d "{
+               \"applicationId\": \"$APP_ID\"
+            }"
