@@ -33,6 +33,10 @@ export default defineConfig({
     viteReact(),
     varlockVitePlugin(),
   ],
+  // Avoid colliding with the SPA route `/assets` (nginx would 403 the real dir).
+  build: {
+    assetsDir: "static",
+  },
   server: {
     port: 5173,
   },
