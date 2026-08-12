@@ -1,0 +1,41 @@
+{
+  "name": "frontend",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "env:generate": "varlock codegen",
+    "env:validate": "varlock load",
+    "generate-routes": "tsr generate",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@repo/ui": "*",
+    "@tailwindcss/vite": "^4.3.3",
+    "@tanstack/react-devtools": "latest",
+    "@tanstack/react-query": "^5.101.4",
+    "@tanstack/react-query-devtools": "^5.101.4",
+    "@tanstack/react-router": "latest",
+    "@tanstack/react-router-devtools": "latest",
+    "@varlock/vite-integration": "^1.4.0",
+    "better-auth": "^1.6.27",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "shadcn": "^4.17.0",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0",
+    "varlock": "^1.16.1",
+    "vite": "^8.2.1"
+  },
+  "devDependencies": {
+    "@tanstack/devtools-vite": "latest",
+    "@tanstack/router-cli": "^1.167.27",
+    "@tanstack/router-plugin": "latest",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "typescript": "^7.0.2"
+  }
+}
