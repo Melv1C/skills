@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "db:migrate": "APP_ENV=development prisma migrate deploy",
     "dev": "bun run --hot src/index.ts",
     "env:generate": "varlock codegen",
     "env:validate": "varlock load",
@@ -12,7 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:validate": "APP_ENV=development prisma validate",
-    "start": "bun run db:migrate && bun run src/index.ts"
+    "start": "bun run prisma:migrate && bun run src/index.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1108.0",
