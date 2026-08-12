@@ -29,11 +29,13 @@ services:
     image: minio/mc:latest
     depends_on:
       - minio
+    environment:
+      S3_BUCKET: ${S3_BUCKET:-assets}
     entrypoint: >
       /bin/sh -c "
       until mc alias set local http://minio:9000 minioadmin minioadmin; do sleep 1; done;
-      mc mb --ignore-existing local/assets;
-      mc anonymous set none local/assets;
+      mc mb --ignore-existing local/$${S3_BUCKET};
+      mc anonymous set none local/$${S3_BUCKET};
       exit 0;
       "
 
