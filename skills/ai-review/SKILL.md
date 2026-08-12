@@ -20,10 +20,10 @@ Do not post review comments on the MR unless the user explicitly asks. Default o
 
 Use shell and git for clone and diff. Use provider CLIs for metadata:
 
-| Provider | Detect | Metadata CLI |
-|----------|--------|--------------|
-| GitHub | `github.com` or `github.` host with `/pull/` | `gh pr view` |
-| GitLab | `/merge_requests/` or `/-/merge_requests/` | `glab mr view` + `glab repo view` |
+| Provider | Detect                                       | Metadata CLI                      |
+| -------- | -------------------------------------------- | --------------------------------- |
+| GitHub   | `github.com` or `github.` host with `/pull/` | `gh pr view`                      |
+| GitLab   | `/merge_requests/` or `/-/merge_requests/`   | `glab mr view` + `glab repo view` |
 
 Do not use a browser or web search to read the MR.
 

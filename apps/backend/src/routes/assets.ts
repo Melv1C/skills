@@ -13,8 +13,8 @@ import {
 } from "@/services/assets";
 
 const listQuery$ = z.object({
-  cursor: z.string().optional(),
-  limit: z.coerce.number().int().min(1).max(100).optional(),
+  cursor: z.string().trim().optional(),
+  limit: z.coerce.number().min(1).max(100).optional(),
 });
 
 export const assetRoutes = new Hono()

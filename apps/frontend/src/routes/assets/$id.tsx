@@ -44,13 +44,13 @@ function AssetDetailPage() {
   });
 
   if (assetQuery.isLoading) {
-    return <p className="text-sm text-muted-foreground">Loading…</p>;
+    return <p className="text-muted-foreground text-sm">Loading…</p>;
   }
 
   if (assetQuery.isError || !assetQuery.data) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-destructive">
+        <p className="text-destructive text-sm">
           {(assetQuery.error as Error | undefined)?.message ?? "Asset not found"}
         </p>
         <Link to="/assets" className="text-sm underline">
@@ -73,22 +73,22 @@ function AssetDetailPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-1">
-        <Link to="/assets" className="text-sm text-muted-foreground hover:text-foreground">
+        <Link to="/assets" className="text-muted-foreground hover:text-foreground text-sm">
           ← Assets
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">{asset.filename}</h1>
-        <p className="text-sm text-muted-foreground">{asset.id}</p>
+        <p className="text-muted-foreground text-sm">{asset.id}</p>
       </div>
 
       {asset.contentType.startsWith("image/") ? (
         <img
           src={asset.url}
           alt={asset.filename}
-          className="max-h-96 max-w-full rounded-md border border-border object-contain"
+          className="border-border max-h-96 max-w-full rounded-md border object-contain"
         />
       ) : null}
 
-      <dl className="grid gap-3 rounded-lg border border-border p-4 text-sm sm:grid-cols-2">
+      <dl className="border-border grid gap-3 rounded-lg border p-4 text-sm sm:grid-cols-2">
         <div>
           <dt className="text-muted-foreground">Visibility</dt>
           <dd>{asset.visibility}</dd>
@@ -107,19 +107,19 @@ function AssetDetailPage() {
         </div>
       </dl>
 
-      <section className="space-y-3 rounded-lg border border-border p-4">
+      <section className="border-border space-y-3 rounded-lg border p-4">
         <h2 className="text-sm font-medium">Share</h2>
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            className="border-border hover:bg-muted rounded-md border px-3 py-1.5 text-sm"
             onClick={() => void copy("url")}
           >
             {copied === "url" ? "Copied URL" : "Copy URL"}
           </button>
           <button
             type="button"
-            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            className="border-border hover:bg-muted rounded-md border px-3 py-1.5 text-sm"
             onClick={() => void copy("markdown")}
           >
             {copied === "markdown" ? "Copied markdown" : "Copy markdown"}
@@ -128,20 +128,20 @@ function AssetDetailPage() {
             href={asset.url}
             target="_blank"
             rel="noreferrer"
-            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            className="border-border hover:bg-muted rounded-md border px-3 py-1.5 text-sm"
           >
             Open public URL
           </a>
         </div>
-        <pre className="overflow-x-auto rounded-md bg-muted p-3 text-xs">{asset.markdown}</pre>
+        <pre className="bg-muted overflow-x-auto rounded-md p-3 text-xs">{asset.markdown}</pre>
       </section>
 
-      <section className="space-y-3 rounded-lg border border-border p-4">
+      <section className="border-border space-y-3 rounded-lg border p-4">
         <h2 className="text-sm font-medium">Edit</h2>
         <label className="block space-y-1 text-sm">
           <span>Filename</span>
           <input
-            className="w-full rounded-md border border-input bg-background px-3 py-2"
+            className="border-input bg-background w-full rounded-md border px-3 py-2"
             value={currentFilename}
             onChange={(e) => setFilename(e.target.value)}
           />
@@ -149,7 +149,7 @@ function AssetDetailPage() {
         <div className="flex flex-wrap gap-2">
           <button
             type="button"
-            className="rounded-md bg-primary px-3 py-1.5 text-sm text-primary-foreground disabled:opacity-50"
+            className="bg-primary text-primary-foreground rounded-md px-3 py-1.5 text-sm disabled:opacity-50"
             disabled={updateMutation.isPending || currentFilename === asset.filename}
             onClick={() => updateMutation.mutate({ filename: currentFilename })}
           >
@@ -157,7 +157,7 @@ function AssetDetailPage() {
           </button>
           <button
             type="button"
-            className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-muted"
+            className="border-border hover:bg-muted rounded-md border px-3 py-1.5 text-sm"
             disabled={updateMutation.isPending}
             onClick={() =>
               updateMutation.mutate({
@@ -169,7 +169,7 @@ function AssetDetailPage() {
           </button>
           <button
             type="button"
-            className="rounded-md border border-destructive/40 px-3 py-1.5 text-sm text-destructive hover:bg-destructive/10"
+            className="border-destructive/40 text-destructive hover:bg-destructive/10 rounded-md border px-3 py-1.5 text-sm"
             disabled={deleteMutation.isPending}
             onClick={() => {
               if (confirm("Delete this asset?")) deleteMutation.mutate();
@@ -179,7 +179,7 @@ function AssetDetailPage() {
           </button>
         </div>
         {updateMutation.isError ? (
-          <p className="text-sm text-destructive">{(updateMutation.error as Error).message}</p>
+          <p className="text-destructive text-sm">{(updateMutation.error as Error).message}</p>
         ) : null}
       </section>
     </div>

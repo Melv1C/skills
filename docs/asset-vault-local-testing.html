@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -171,8 +171,8 @@
     <main>
       <h1>Asset Vault — What shipped &amp; how to test locally</h1>
       <p class="lede">
-        Implementation summary of the Asset Vault v1 plan on top of the existing
-        monorepo starter, plus a concrete local verification path.
+        Implementation summary of the Asset Vault v1 plan on top of the existing monorepo starter,
+        plus a concrete local verification path.
       </p>
 
       <nav class="toc" aria-label="Table of contents">
@@ -191,8 +191,8 @@
 
       <h2 id="shipped">1. What shipped</h2>
       <p>
-        Status: <span class="tag">v1 working locally</span> (API + MinIO +
-        Postgres + web UI smoke-tested).
+        Status: <span class="tag">v1 working locally</span> (API + MinIO + Postgres + web UI
+        smoke-tested).
       </p>
       <table>
         <thead>
@@ -205,23 +205,23 @@
           <tr>
             <td>Auth</td>
             <td>
-              Better Auth email/password + <code>admin</code> +
-              <code>bearer</code> + <code>@better-auth/api-key</code> with
-              <code>enableSessionForAPIKeys</code>, prefix <code>av_</code>
+              Better Auth email/password + <code>admin</code> + <code>bearer</code> +
+              <code>@better-auth/api-key</code> with <code>enableSessionForAPIKeys</code>, prefix
+              <code>av_</code>
             </td>
           </tr>
           <tr>
             <td>DB</td>
             <td>
-              Prisma models: existing auth tables + <code>Apikey</code> +
-              <code>Asset</code> / <code>Visibility</code>
+              Prisma models: existing auth tables + <code>Apikey</code> + <code>Asset</code> /
+              <code>Visibility</code>
             </td>
           </tr>
           <tr>
             <td>Storage</td>
             <td>
-              S3-compatible interface (<code>put/get/delete/exists/createPresignedUrl</code>)
-              backed by MinIO via AWS SDK
+              S3-compatible interface (<code>put/get/delete/exists/createPresignedUrl</code>) backed
+              by MinIO via AWS SDK
             </td>
           </tr>
           <tr>
@@ -234,8 +234,8 @@
           <tr>
             <td>Web</td>
             <td>
-              <code>/login</code>, <code>/assets</code>,
-              <code>/assets/$id</code>, <code>/settings/tokens</code>
+              <code>/login</code>, <code>/assets</code>, <code>/assets/$id</code>,
+              <code>/settings/tokens</code>
             </td>
           </tr>
           <tr>
@@ -252,16 +252,16 @@
           <code>/api/auth/*</code>
         </li>
         <li>
-          Agents: API keys created under <code>/api/tokens</code> (or Better
-          Auth api-key endpoints). Use either:
+          Agents: API keys created under <code>/api/tokens</code> (or Better Auth api-key
+          endpoints). Use either:
           <ul>
             <li><code>Authorization: Bearer av_…</code></li>
             <li><code>x-api-key: av_…</code></li>
           </ul>
         </li>
         <li>
-          Middleware normalizes <code>Bearer av_…</code> into
-          <code>x-api-key</code>, then <code>auth.api.getSession</code>
+          Middleware normalizes <code>Bearer av_…</code> into <code>x-api-key</code>, then
+          <code>auth.api.getSession</code>
           resolves a mock user session via
           <code>enableSessionForAPIKeys</code>.
         </li>
@@ -289,7 +289,8 @@
       </ul>
 
       <h2 id="endpoints">3. Endpoints</h2>
-      <pre>POST/GET  /api/auth/*          Better Auth
+      <pre>
+POST/GET  /api/auth/*          Better Auth
 GET       /api/health
 GET/POST  /api/assets
 GET/PATCH/DELETE /api/assets/:id
@@ -298,8 +299,7 @@ DELETE    /api/tokens/:id
 GET       /a/:id               public or owner → 302 to signed MinIO URL</pre>
 
       <p class="muted">
-        Upload response includes <code>url</code> and <code>markdown</code> for
-        the agent workflow.
+        Upload response includes <code>url</code> and <code>markdown</code> for the agent workflow.
       </p>
 
       <h2 id="boot">4. Boot locally</h2>
@@ -311,9 +311,8 @@ GET       /a/:id               public or owner → 302 to signed MinIO URL</pre>
         </header>
         <pre>bun run docker:deps</pre>
         <p class="muted">
-          MinIO API <code>localhost:9000</code>, console
-          <code>localhost:9001</code> (minioadmin / minioadmin). Bucket
-          <code>assets</code> is created private by <code>minio-init</code>.
+          MinIO API <code>localhost:9000</code>, console <code>localhost:9001</code> (minioadmin /
+          minioadmin). Bucket <code>assets</code> is created private by <code>minio-init</code>.
         </p>
       </div>
 
@@ -322,7 +321,8 @@ GET       /a/:id               public or owner → 302 to signed MinIO URL</pre>
           <h3>2. Env + Prisma</h3>
           <span class="meta">once / after schema changes</span>
         </header>
-        <pre>bun run env:generate
+        <pre>
+bun run env:generate
 bun run prisma:generate
 bun run prisma:migrate</pre>
       </div>
@@ -332,7 +332,8 @@ bun run prisma:migrate</pre>
           <h3>3. API</h3>
           <span class="meta">terminal B</span>
         </header>
-        <pre>bun --filter backend dev
+        <pre>
+bun --filter backend dev
 # or: cd apps/backend && APP_ENV=development bun run --hot src/index.ts</pre>
         <p class="muted">Listens on <code>http://localhost:3000</code>.</p>
       </div>
@@ -342,7 +343,8 @@ bun run prisma:migrate</pre>
           <h3>4. Web</h3>
           <span class="meta">terminal C</span>
         </header>
-        <pre>bun --filter frontend dev
+        <pre>
+bun --filter frontend dev
 # or: cd apps/frontend && APP_ENV=development bun run dev</pre>
         <p class="muted">Vite on <code>http://localhost:5173</code>.</p>
       </div>
@@ -358,31 +360,29 @@ bun run prisma:migrate</pre>
       <h2 id="ui">5. UI walkthrough</h2>
       <ol>
         <li>
-          Open <code>http://localhost:5173/login</code> → Sign up (email +
-          password ≥ 8 chars).
+          Open <code>http://localhost:5173/login</code> → Sign up (email + password ≥ 8 chars).
         </li>
         <li>
-          You land on <code>/assets</code>. Upload a file as
-          <code>public</code> or <code>private</code>.
+          You land on <code>/assets</code>. Upload a file as <code>public</code> or
+          <code>private</code>.
         </li>
+        <li>Open the asset detail page → copy URL / markdown, toggle visibility, delete.</li>
         <li>
-          Open the asset detail page → copy URL / markdown, toggle visibility,
-          delete.
+          Go to <code>/settings/tokens</code> → create a token named <code>agent</code>. Copy the
+          <code>av_…</code> secret once.
         </li>
-        <li>
-          Go to <code>/settings/tokens</code> → create a token named
-          <code>agent</code>. Copy the <code>av_…</code> secret once.
-        </li>
-        <li>
-          Paste that key into the curl flow below to confirm agent auth.
-        </li>
+        <li>Paste that key into the curl flow below to confirm agent auth.</li>
       </ol>
 
       <h2 id="curl">6. Agent / curl walkthrough</h2>
-      <p>Replace <code>$ASSET_TOKEN</code> with a key from the UI (or create one via API while logged in).</p>
+      <p>
+        Replace <code>$ASSET_TOKEN</code> with a key from the UI (or create one via API while logged
+        in).
+      </p>
 
       <h3>Create a token (session cookie)</h3>
-      <pre>curl -sS -c /tmp/av.txt -b /tmp/av.txt \
+      <pre>
+curl -sS -c /tmp/av.txt -b /tmp/av.txt \
   -X POST http://localhost:3000/api/auth/sign-in/email \
   -H 'Content-Type: application/json' \
   -d '{"email":"YOU@example.com","password":"YOUR_PASSWORD"}'
@@ -393,7 +393,8 @@ curl -sS -c /tmp/av.txt -b /tmp/av.txt \
   -d '{"name":"agent"}'</pre>
 
       <h3>Upload (killer workflow)</h3>
-      <pre>curl -sS -X POST http://localhost:3000/api/assets \
+      <pre>
+curl -sS -X POST http://localhost:3000/api/assets \
   -H "Authorization: Bearer $ASSET_TOKEN" \
   -F "file=@./screenshot.png" \
   -F "visibility=public"</pre>
@@ -401,7 +402,8 @@ curl -sS -c /tmp/av.txt -b /tmp/av.txt \
       <p>Expected JSON fields: <code>id</code>, <code>url</code>, <code>markdown</code>.</p>
 
       <h3>Public fetch</h3>
-      <pre>curl -sS -L -o /tmp/out.bin -w "%{http_code}\n" \
+      <pre>
+curl -sS -L -o /tmp/out.bin -w "%{http_code}\n" \
   "http://localhost:3000/a/&lt;ASSET_ID&gt;"</pre>
       <p class="muted">
         First response is <code>302</code> to a short-lived MinIO signed URL;
@@ -409,7 +411,8 @@ curl -sS -c /tmp/av.txt -b /tmp/av.txt \
       </p>
 
       <h3>Private requires auth</h3>
-      <pre># without auth → 401
+      <pre>
+# without auth → 401
 curl -sS -o /dev/null -w "%{http_code}\n" \
   "http://localhost:3000/a/&lt;PRIVATE_ID&gt;"
 
@@ -419,7 +422,8 @@ curl -sS -o /dev/null -w "%{http_code}\n" \
   "http://localhost:3000/a/&lt;PRIVATE_ID&gt;"</pre>
 
       <h3>List / delete</h3>
-      <pre>curl -sS -H "Authorization: Bearer $ASSET_TOKEN" \
+      <pre>
+curl -sS -H "Authorization: Bearer $ASSET_TOKEN" \
   http://localhost:3000/api/assets
 
 curl -sS -X DELETE -H "Authorization: Bearer $ASSET_TOKEN" \
@@ -444,7 +448,10 @@ curl -sS -X DELETE -H "Authorization: Bearer $ASSET_TOKEN" \
           </tr>
           <tr>
             <td>Public upload via Bearer</td>
-            <td>201 + <code>url</code>/<code>markdown</code>; <code>/a/:id</code> redirects and serves bytes</td>
+            <td>
+              201 + <code>url</code>/<code>markdown</code>; <code>/a/:id</code> redirects and serves
+              bytes
+            </td>
           </tr>
           <tr>
             <td>Private upload</td>
@@ -465,25 +472,23 @@ curl -sS -X DELETE -H "Authorization: Bearer $ASSET_TOKEN" \
       <ul>
         <li>
           Keep URL-like env vars non-sensitive in varlock (<code>BETTER_AUTH_URL</code>,
-          <code>PUBLIC_ASSET_BASE_URL</code>, <code>S3_ENDPOINT</code>,
-          <code>S3_BUCKET</code>) so response bodies / redirects are not blocked
-          by leak detection. Secrets stay sensitive
+          <code>PUBLIC_ASSET_BASE_URL</code>, <code>S3_ENDPOINT</code>, <code>S3_BUCKET</code>) so
+          response bodies / redirects are not blocked by leak detection. Secrets stay sensitive
           (<code>BETTER_AUTH_SECRET</code>, <code>S3_*_KEY</code>.
         </li>
         <li>
-          API key default rate limit is configured to 1000 req/hour in the
-          plugin. Older keys created before that config may still have tighter
-          DB defaults — create a fresh token if you hit 403.
+          API key default rate limit is configured to 1000 req/hour in the plugin. Older keys
+          created before that config may still have tighter DB defaults — create a fresh token if
+          you hit 403.
         </li>
         <li>
           <code>GET /a/:id</code> redirects to MinIO; browsers must reach
-          <code>localhost:9000</code>. Production should keep the bucket private
-          and only expose Hono.
+          <code>localhost:9000</code>. Production should keep the bucket private and only expose
+          Hono.
         </li>
         <li>
-          App names remain <code>backend</code> / <code>frontend</code> (not
-          renamed to api/web). No CLI, Redis, ACL table, or api-client package
-          in v1.
+          App names remain <code>backend</code> / <code>frontend</code> (not renamed to api/web). No
+          CLI, Redis, ACL table, or api-client package in v1.
         </li>
         <li>
           Root scripts: <code>docker:deps</code> starts Postgres+MinIO;
@@ -492,8 +497,8 @@ curl -sS -X DELETE -H "Authorization: Bearer $ASSET_TOKEN" \
       </ul>
 
       <footer>
-        Asset Vault v1 implementation summary. Local stack: Bun + Hono + Better
-        Auth + Prisma/Postgres + MinIO + React/Vite/TanStack.
+        Asset Vault v1 implementation summary. Local stack: Bun + Hono + Better Auth +
+        Prisma/Postgres + MinIO + React/Vite/TanStack.
       </footer>
     </main>
   </body>

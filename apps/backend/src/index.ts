@@ -7,8 +7,8 @@ import { requestId } from "hono/request-id";
 import { ENV } from "varlock/env";
 
 import { logger } from "./lib/logger";
-import { publicAssetRoutes } from "./routes/public-asset";
 import { routes } from "./routes";
+import { publicAssetRoutes } from "./routes/public-asset";
 import "./hono-context.types";
 
 const { printMetrics, registerMetrics } = prometheus();

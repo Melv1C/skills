@@ -15,7 +15,7 @@ export const Route = createFileRoute("/settings/")({
 
 function SettingsIndexPage() {
   return (
-    <p className="text-sm text-muted-foreground">
+    <p className="text-muted-foreground text-sm">
       <Link to="/settings/tokens">Go to tokens</Link>
     </p>
   );

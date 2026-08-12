@@ -49,19 +49,19 @@ function LoginPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           {mode === "signin" ? "Sign in" : "Create account"}
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           <Link to="/" className="underline-offset-2 hover:underline">
             Asset Vault
           </Link>
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="space-y-3 rounded-lg border border-border p-4">
+      <form onSubmit={onSubmit} className="border-border space-y-3 rounded-lg border p-4">
         {mode === "signup" ? (
           <label className="block space-y-1 text-sm">
             <span>Name</span>
             <input
-              className="w-full rounded-md border border-input bg-background px-3 py-2"
+              className="border-input bg-background w-full rounded-md border px-3 py-2"
               value={name}
               onChange={(e) => setName(e.target.value)}
               autoComplete="name"
@@ -74,7 +74,7 @@ function LoginPage() {
           <input
             type="email"
             required
-            className="w-full rounded-md border border-input bg-background px-3 py-2"
+            className="border-input bg-background w-full rounded-md border px-3 py-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="email"
@@ -87,25 +87,25 @@ function LoginPage() {
             type="password"
             required
             minLength={8}
-            className="w-full rounded-md border border-input bg-background px-3 py-2"
+            className="border-input bg-background w-full rounded-md border px-3 py-2"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete={mode === "signin" ? "current-password" : "new-password"}
           />
         </label>
 
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? <p className="text-destructive text-sm">{error}</p> : null}
 
         <button
           type="submit"
           disabled={pending}
-          className="w-full rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground disabled:opacity-50"
+          className="bg-primary text-primary-foreground w-full rounded-md px-3 py-2 text-sm disabled:opacity-50"
         >
           {pending ? "Working…" : mode === "signin" ? "Sign in" : "Sign up"}
         </button>
       </form>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-muted-foreground text-center text-sm">
         {mode === "signin" ? (
           <>
             No account?{" "}

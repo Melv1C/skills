@@ -28,13 +28,15 @@ export type Token = {
 export type CreatedToken = Token & { key: string };
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const headers = new Headers(init?.headers);
+  if (!(init?.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
   const response = await fetch(`${ENV.BACKEND_URL}${path}`, {
     ...init,
     credentials: "include",
-    headers: {
-      ...(init?.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
-      ...init?.headers,
-    },
+    headers,
   });
 
   if (!response.ok) {

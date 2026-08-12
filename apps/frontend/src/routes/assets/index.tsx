@@ -39,17 +39,19 @@ function AssetsPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Assets</h1>
-          <p className="text-sm text-muted-foreground">Upload and manage files for agents and humans.</p>
+          <p className="text-muted-foreground text-sm">
+            Upload and manage files for agents and humans.
+          </p>
         </div>
       </div>
 
-      <section className="space-y-3 rounded-lg border border-border p-4">
+      <section className="border-border space-y-3 rounded-lg border p-4">
         <h2 className="text-sm font-medium">Upload</h2>
         <div className="flex flex-wrap items-center gap-3">
           <label className="text-sm">
             Visibility{" "}
             <select
-              className="ml-1 rounded-md border border-input bg-background px-2 py-1"
+              className="border-input bg-background ml-1 rounded-md border px-2 py-1"
               value={visibility}
               onChange={(e) => setVisibility(e.target.value as "private" | "public")}
             >
@@ -66,24 +68,27 @@ function AssetsPage() {
             }}
           />
           {uploadMutation.isPending ? (
-            <span className="text-sm text-muted-foreground">Uploading…</span>
+            <span className="text-muted-foreground text-sm">Uploading…</span>
           ) : null}
         </div>
-        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        {error ? <p className="text-destructive text-sm">{error}</p> : null}
       </section>
 
       <section className="space-y-3">
         <h2 className="text-sm font-medium">Your assets</h2>
         {assetsQuery.isLoading ? (
-          <p className="text-sm text-muted-foreground">Loading…</p>
+          <p className="text-muted-foreground text-sm">Loading…</p>
         ) : assetsQuery.isError ? (
-          <p className="text-sm text-destructive">{(assetsQuery.error as Error).message}</p>
+          <p className="text-destructive text-sm">{(assetsQuery.error as Error).message}</p>
         ) : assetsQuery.data?.items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No assets yet.</p>
+          <p className="text-muted-foreground text-sm">No assets yet.</p>
         ) : (
-          <ul className="divide-y divide-border rounded-lg border border-border">
+          <ul className="divide-border border-border divide-y rounded-lg border">
             {assetsQuery.data?.items.map((asset) => (
-              <li key={asset.id} className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+              <li
+                key={asset.id}
+                className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+              >
                 <div className="min-w-0">
                   <Link
                     to="/assets/$id"
@@ -92,7 +97,7 @@ function AssetsPage() {
                   >
                     {asset.filename}
                   </Link>
-                  <p className="truncate text-xs text-muted-foreground">
+                  <p className="text-muted-foreground truncate text-xs">
                     {asset.visibility} · {asset.contentType} · {asset.size} bytes
                   </p>
                 </div>
@@ -100,7 +105,7 @@ function AssetsPage() {
                   href={asset.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground text-sm"
                 >
                   Open
                 </a>

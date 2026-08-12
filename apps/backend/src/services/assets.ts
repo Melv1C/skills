@@ -123,11 +123,7 @@ export async function createAsset(input: {
   }
 }
 
-export async function listAssets(input: {
-  ownerId: string;
-  cursor?: string;
-  limit?: number;
-}) {
+export async function listAssets(input: { ownerId: string; cursor?: string; limit?: number }) {
   const limit = Math.min(Math.max(input.limit ?? 20, 1), 100);
 
   const assets = await prisma.asset.findMany({
@@ -147,7 +143,7 @@ export async function listAssets(input: {
 
   return {
     items: items.map(toAssetDto),
-    nextCursor: hasMore ? items[items.length - 1]?.id ?? null : null,
+    nextCursor: hasMore ? (items[items.length - 1]?.id ?? null) : null,
   };
 }
 
@@ -182,9 +178,7 @@ export async function updateAsset(input: {
     where: { id: input.id },
     data: {
       ...(input.filename !== undefined ? { filename: input.filename } : {}),
-      ...(input.visibility !== undefined
-        ? { visibility: toVisibilityEnum(input.visibility) }
-        : {}),
+      ...(input.visibility !== undefined ? { visibility: toVisibilityEnum(input.visibility) } : {}),
     },
   });
 
@@ -200,6 +194,8 @@ export async function deleteAsset(input: { ownerId: string; id: string }) {
   }
 
   await prisma.asset.delete({ where: { id: input.id } });
-  await getStorage().delete(existing.storageKey).catch(() => undefined);
+  await getStorage()
+    .delete(existing.storageKey)
+    .catch(() => undefined);
   return { success: true as const };
 }

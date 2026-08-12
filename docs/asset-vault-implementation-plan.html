@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -236,9 +236,8 @@
     <main>
       <h1>Asset Vault — Implementation Plan</h1>
       <p class="lede">
-        Gap analysis of the current <code>skills</code> monorepo starter against
-        the proposed Asset Vault product, plus a phased plan to implement v1
-        without rewriting what already works.
+        Gap analysis of the current <code>skills</code> monorepo starter against the proposed Asset
+        Vault product, plus a phased plan to implement v1 without rewriting what already works.
       </p>
 
       <nav class="toc" aria-label="Table of contents">
@@ -261,22 +260,22 @@
 
       <h2 id="verdict">1. Verdict</h2>
       <p>
-        The starter is already ~60% of the <em>platform</em> you want (Hono,
-        Better Auth, Prisma/Postgres, React+Vite, TanStack Router/Query,
-        shadcn/ui, Docker, Dokploy-oriented CI). It is ~0% of the
-        <em>product</em>: no Asset model, no object storage, no API keys, no
+        The starter is already ~60% of the <em>platform</em> you want (Hono, Better Auth,
+        Prisma/Postgres, React+Vite, TanStack Router/Query, shadcn/ui, Docker, Dokploy-oriented CI).
+        It is ~0% of the <em>product</em>: no Asset model, no object storage, no API keys, no
         OpenAPI, no asset UI.
       </p>
       <p>
-        Strategy: <strong>evolve in place</strong>. Do not greenfield a new
-        monorepo. Rename later if desired; ship features first under
-        <code>apps/backend</code> and <code>apps/frontend</code>.
+        Strategy: <strong>evolve in place</strong>. Do not greenfield a new monorepo. Rename later
+        if desired; ship features first under <code>apps/backend</code> and
+        <code>apps/frontend</code>.
       </p>
 
       <h2 id="inventory">2. Current inventory</h2>
 
       <h3>Monorepo</h3>
-      <pre>apps/
+      <pre>
+apps/
   backend/     Hono + Better Auth + Prisma (auth models only)
   frontend/    React + Vite + TanStack Router/Query + Better Auth client
 packages/
@@ -288,12 +287,12 @@ docker-compose.yml   Postgres 18 only
       <h3>What works today</h3>
       <ul>
         <li>
-          Hono app mounts <code>/api</code>, CORS to frontend, request IDs,
-          Prometheus <code>/metrics</code>, Winston (+ optional Loki).
+          Hono app mounts <code>/api</code>, CORS to frontend, request IDs, Prometheus
+          <code>/metrics</code>, Winston (+ optional Loki).
         </li>
         <li>
-          Better Auth: email/password, Prisma adapter, <code>admin</code>
-          plugin. Handler at <code>/api/auth/*</code>.
+          Better Auth: email/password, Prisma adapter, <code>admin</code> plugin. Handler at
+          <code>/api/auth/*</code>.
         </li>
         <li>
           Auth middleware sets <code>user</code>/<code>session</code>; helpers
@@ -301,13 +300,10 @@ docker-compose.yml   Postgres 18 only
         </li>
         <li>Health route under <code>/api/health</code>.</li>
         <li>
-          Frontend: QueryClient, router, root layout, placeholder home page,
-          auth client with admin + genericOAuth plugins.
+          Frontend: QueryClient, router, root layout, placeholder home page, auth client with admin
+          + genericOAuth plugins.
         </li>
-        <li>
-          Dockerfiles for backend (Bun) and frontend (nginx static). Turbo prune
-          for builds.
-        </li>
+        <li>Dockerfiles for backend (Bun) and frontend (nginx static). Turbo prune for builds.</li>
         <li>Varlock env schemas shared via <code>.env.shared</code>.</li>
       </ul>
 
@@ -432,20 +428,17 @@ docker-compose.yml   Postgres 18 only
           <h3>Adapt deliberately</h3>
           <ul>
             <li>
-              Auth: add <code>apiKey</code> + <code>bearer</code>; optionally
-              Better Auth <code>openAPI</code> plugin for auth docs
+              Auth: add <code>apiKey</code> + <code>bearer</code>; optionally Better Auth
+              <code>openAPI</code> plugin for auth docs
             </li>
             <li>
               Middleware: resolve session <em>or</em> API key into the same
               <code>user</code> context
             </li>
+            <li>Compose: add MinIO + create default bucket on boot</li>
             <li>
-              Compose: add MinIO + create default bucket on boot
-            </li>
-            <li>
-              Env URLs: plan path toward same-origin
-              (<code>assets.example.com</code>) later; keep split URLs in
-              development
+              Env URLs: plan path toward same-origin (<code>assets.example.com</code>) later; keep
+              split URLs in development
             </li>
             <li>
               Frontend auth client: drop unused <code>genericOAuthClient</code>
@@ -457,9 +450,8 @@ docker-compose.yml   Postgres 18 only
       <div class="callout" style="margin-top: 0.9rem">
         <strong>Skip for v1</strong>
         <span class="muted"
-          >packages/api-client, packages/db extraction, Redis, queues, MCP,
-          GraphQL, CLI, CDN, permissions table (owner-only first), expiresAt
-          enforcement job, multi-tenant orgs.</span
+          >packages/api-client, packages/db extraction, Redis, queues, MCP, GraphQL, CLI, CDN,
+          permissions table (owner-only first), expiresAt enforcement job, multi-tenant orgs.</span
         >
       </div>
 
@@ -468,68 +460,65 @@ docker-compose.yml   Postgres 18 only
       <div class="decision">
         <div class="q">Core noun is Asset, not File/Image</div>
         <div class="a">
-          Schema, routes, and UI all say Asset. Content-type stays a field;
-          future subtypes do not require a rename.
+          Schema, routes, and UI all say Asset. Content-type stays a field; future subtypes do not
+          require a rename.
         </div>
       </div>
       <div class="decision">
         <div class="q">Postgres = metadata; object storage = bytes</div>
         <div class="a">
-          Never store binary in Postgres. <code>storageKey</code> is the only
-          link to the object.
+          Never store binary in Postgres. <code>storageKey</code> is the only link to the object.
         </div>
       </div>
       <div class="decision">
         <div class="q">Public delivery goes through Hono (<code>/a/:id</code>)</div>
         <div class="a">
-          Bucket stays private. Hono authorizes, then streams or redirects to a
-          short-lived signed URL. CDN can sit in front later without changing
-          clients.
+          Bucket stays private. Hono authorizes, then streams or redirects to a short-lived signed
+          URL. CDN can sit in front later without changing clients.
         </div>
       </div>
       <div class="decision">
         <div class="q">HTTP API is the primary interface; OpenAPI from day one</div>
         <div class="a">
-          Agents get <code>/api/docs</code>. Humans and curl use the same
-          contract. No CLI in v1.
+          Agents get <code>/api/docs</code>. Humans and curl use the same contract. No CLI in v1.
         </div>
       </div>
       <div class="decision">
         <div class="q">Auth ownership split</div>
         <div class="a">
-          Better Auth owns users, sessions, accounts, verification, API keys.
-          App owns Asset (+ later permissions/metadata).
+          Better Auth owns users, sessions, accounts, verification, API keys. App owns Asset (+
+          later permissions/metadata).
         </div>
       </div>
       <div class="decision">
         <div class="q">v1 authorization is owner-only</div>
         <div class="a">
-          No <code>asset_permissions</code> table yet. Visibility is
-          <code>private</code> | <code>public</code>. Private requires owner
-          (session or API key). Public is readable via <code>/a/:id</code>
+          No <code>asset_permissions</code> table yet. Visibility is <code>private</code> |
+          <code>public</code>. Private requires owner (session or API key). Public is readable via
+          <code>/a/:id</code>
           without auth.
         </div>
       </div>
       <div class="decision">
         <div class="q">Storage interface now; MinIO first</div>
         <div class="a">
-          Implement <code>Storage</code> with put/get/delete/exists/createPresignedUrl.
-          Ship MinIO driver. S3/R2 are config swaps later.
+          Implement <code>Storage</code> with put/get/delete/exists/createPresignedUrl. Ship MinIO
+          driver. S3/R2 are config swaps later.
         </div>
       </div>
       <div class="decision">
         <div class="q">IDs</div>
         <div class="a">
-          Use ULID (or UUIDv7) for Asset.id so public URLs are opaque and
-          sortable. Prefer ULID for the agent-friendly <code>01K…</code> shape
-          from the product sketch.
+          Use ULID (or UUIDv7) for Asset.id so public URLs are opaque and sortable. Prefer ULID for
+          the agent-friendly <code>01K…</code> shape from the product sketch.
         </div>
       </div>
 
       <h2 id="model">6. Data + auth model</h2>
 
       <h3>Better Auth (existing + extend)</h3>
-      <pre>User ──&lt; Session
+      <pre>
+User ──&lt; Session
   │
   ├──&lt; Account
   ├──&lt; Verification
@@ -538,7 +527,8 @@ docker-compose.yml   Postgres 18 only
 Asset.ownerId → User.id</pre>
 
       <h3>Asset (new)</h3>
-      <pre>model Asset {
+      <pre>
+model Asset {
   id          String    @id          // ULID
   ownerId     String
   owner       User      @relation(...)
@@ -564,27 +554,24 @@ enum Visibility {
       <div class="callout">
         <strong>Invariant</strong>
         <span class="muted"
-          ><code>storageKey</code> is internal (e.g.
-          <code>assets/{ownerId}/{id}</code>). Clients never see or guess bucket
-          paths; they only ever use Asset id and <code>/a/:id</code>.</span
+          ><code>storageKey</code> is internal (e.g. <code>assets/{ownerId}/{id}</code>). Clients
+          never see or guess bucket paths; they only ever use Asset id and
+          <code>/a/:id</code>.</span
         >
       </div>
 
       <h3>Deferred tables</h3>
       <ul>
-        <li>
-          <code>AssetPermission</code> (share with other users / scoped keys)
-        </li>
-        <li>
-          <code>AssetMetadata</code> (JSON key/value or typed fields)
-        </li>
+        <li><code>AssetPermission</code> (share with other users / scoped keys)</li>
+        <li><code>AssetMetadata</code> (JSON key/value or typed fields)</li>
         <li>Soft-delete / retention audit log</li>
       </ul>
 
       <h2 id="api">7. API contract (v1)</h2>
 
       <h3>Mounting</h3>
-      <pre>Backend (Hono)
+      <pre>
+Backend (Hono)
   /api/auth/*     Better Auth
   /api/health     existing
   /api/assets     CRUD (auth required)
@@ -609,8 +596,7 @@ enum Visibility {
             <td><code>/api/assets</code></td>
             <td>session or API key</td>
             <td>
-              multipart: <code>file</code>, optional
-              <code>visibility</code>, <code>filename</code>
+              multipart: <code>file</code>, optional <code>visibility</code>, <code>filename</code>
             </td>
           </tr>
           <tr>
@@ -647,7 +633,8 @@ enum Visibility {
       </table>
 
       <h3>Upload response shape (agent-facing)</h3>
-      <pre>{
+      <pre>
+{
   "id": "01KQ...",
   "filename": "screenshot.png",
   "contentType": "image/png",
@@ -691,19 +678,22 @@ enum Visibility {
       </table>
 
       <h3>Web UI routes</h3>
-      <pre>/login
+      <pre>
+/login
 /assets
 /assets/$id
 /settings
 /settings/tokens</pre>
 
       <h2 id="storage">8. Storage layer</h2>
-      <pre>apps/backend/src/services/storage/
+      <pre>
+apps/backend/src/services/storage/
   types.ts          Storage interface
   s3.ts             S3-compatible implementation (@aws-sdk/client-s3)
   index.ts          factory from env</pre>
 
-      <pre>interface Storage {
+      <pre>
+interface Storage {
   put(key: string, body: ReadableStream | Buffer, opts): Promise&lt;void&gt;
   get(key: string): Promise&lt;StorageObject&gt;
   delete(key: string): Promise&lt;void&gt;
@@ -712,7 +702,8 @@ enum Visibility {
 }</pre>
 
       <h3>Compose addition</h3>
-      <pre>minio:
+      <pre>
+minio:
   image: minio/minio
   command: server /data --console-address ":9001"
   ports: ["9000:9000", "9001:9001"]
@@ -721,7 +712,8 @@ enum Visibility {
 # optional one-shot createbucket using minio/mc</pre>
 
       <h3>Env (backend)</h3>
-      <pre>S3_ENDPOINT=http://localhost:9000
+      <pre>
+S3_ENDPOINT=http://localhost:9000
 S3_REGION=us-east-1
 S3_ACCESS_KEY_ID=...
 S3_SECRET_ACCESS_KEY=...
@@ -731,9 +723,9 @@ S3_FORCE_PATH_STYLE=true</pre>
       <div class="callout">
         <strong>Delivery strategy for v1</strong>
         <span class="muted"
-          >Prefer redirect-to-presigned-URL for large objects; optionally stream
-          small ones through Hono. Document the choice in OpenAPI. Do not expose
-          the MinIO endpoint publicly in production.</span
+          >Prefer redirect-to-presigned-URL for large objects; optionally stream small ones through
+          Hono. Document the choice in OpenAPI. Do not expose the MinIO endpoint publicly in
+          production.</span
         >
       </div>
 
@@ -750,17 +742,11 @@ S3_FORCE_PATH_STYLE=true</pre>
             <code>vo2.melvyn.be</code> placeholders when ready).
           </li>
           <li>
-            Add MinIO to <code>docker-compose.yml</code>; document
-            <code>bun run docker:db</code> → rename script to
-            <code>docker:deps</code> or similar.
+            Add MinIO to <code>docker-compose.yml</code>; document <code>bun run docker:db</code> →
+            rename script to <code>docker:deps</code> or similar.
           </li>
-          <li>
-            Add S3 env vars to backend <code>.env.schema</code>; generate types.
-          </li>
-          <li>
-            Decide ULID library (<code>ulid</code> or similar) and max upload
-            size.
-          </li>
+          <li>Add S3 env vars to backend <code>.env.schema</code>; generate types.</li>
+          <li>Decide ULID library (<code>ulid</code> or similar) and max upload size.</li>
         </ul>
       </div>
 
@@ -775,12 +761,10 @@ S3_FORCE_PATH_STYLE=true</pre>
             plugins; regenerate Prisma schema via Better Auth CLI; migrate.
           </li>
           <li>
-            Update <code>useAuth</code> so Bearer API keys resolve to the same
-            <code>user</code> as cookie sessions.
+            Update <code>useAuth</code> so Bearer API keys resolve to the same <code>user</code> as
+            cookie sessions.
           </li>
-          <li>
-            Mirror client plugins; keep email/password for humans.
-          </li>
+          <li>Mirror client plugins; keep email/password for humans.</li>
           <li>
             Smoke: create key via API, call a protected stub with
             <code>Authorization: Bearer …</code>.
@@ -795,18 +779,14 @@ S3_FORCE_PATH_STYLE=true</pre>
         </header>
         <ul>
           <li>
-            Introduce <code>@hono/zod-openapi</code> (or Hono OpenAPI helper
-            already compatible with Zod 4 in this repo) for app routes.
+            Introduce <code>@hono/zod-openapi</code> (or Hono OpenAPI helper already compatible with
+            Zod 4 in this repo) for app routes.
           </li>
+          <li>Mount Scalar at <code>/api/docs</code>; serve OpenAPI JSON.</li>
+          <li>Document auth schemes: cookie session + HTTP bearer.</li>
           <li>
-            Mount Scalar at <code>/api/docs</code>; serve OpenAPI JSON.
-          </li>
-          <li>
-            Document auth schemes: cookie session + HTTP bearer.
-          </li>
-          <li>
-            Keep Better Auth routes outside the OpenAPI app router if needed;
-            link to them from docs intro text.
+            Keep Better Auth routes outside the OpenAPI app router if needed; link to them from docs
+            intro text.
           </li>
         </ul>
       </div>
@@ -820,22 +800,15 @@ S3_FORCE_PATH_STYLE=true</pre>
           <li>Implement Storage interface + S3/MinIO driver.</li>
           <li>Add Asset Prisma model + migration.</li>
           <li>
-            Services: <code>assets.ts</code> (create/list/get/update/delete)
-            composing prisma + storage + sha256.
+            Services: <code>assets.ts</code> (create/list/get/update/delete) composing prisma +
+            storage + sha256.
           </li>
           <li>
-            Routes: full CRUD under <code>/api/assets</code> with OpenAPI
-            schemas; multipart upload.
+            Routes: full CRUD under <code>/api/assets</code> with OpenAPI schemas; multipart upload.
           </li>
-          <li>
-            Route: <code>GET /a/:id</code> with public/private checks.
-          </li>
-          <li>
-            Return <code>url</code> + <code>markdown</code> on create.
-          </li>
-          <li>
-            Manual test with curl using API token (the killer workflow).
-          </li>
+          <li>Route: <code>GET /a/:id</code> with public/private checks.</li>
+          <li>Return <code>url</code> + <code>markdown</code> on create.</li>
+          <li>Manual test with curl using API token (the killer workflow).</li>
         </ul>
       </div>
 
@@ -846,8 +819,8 @@ S3_FORCE_PATH_STYLE=true</pre>
         </header>
         <ul>
           <li>
-            Expose list/create/revoke under <code>/api/tokens</code> (wrappers
-            over Better Auth API key APIs if needed).
+            Expose list/create/revoke under <code>/api/tokens</code> (wrappers over Better Auth API
+            key APIs if needed).
           </li>
           <li>Document one-time secret display rule.</li>
         </ul>
@@ -859,24 +832,11 @@ S3_FORCE_PATH_STYLE=true</pre>
           <span class="meta">2–3 days</span>
         </header>
         <ul>
-          <li>
-            Auth gate: <code>/login</code>; redirect unauthenticated users.
-          </li>
-          <li>
-            <code>/assets</code>: list, upload, visibility badge, copy URL /
-            markdown.
-          </li>
-          <li>
-            <code>/assets/$id</code>: detail, rename, visibility toggle,
-            delete.
-          </li>
-          <li>
-            <code>/settings/tokens</code>: create/revoke keys.
-          </li>
-          <li>
-            Use existing <code>@repo/ui</code> primitives; boring dashboard is
-            fine.
-          </li>
+          <li>Auth gate: <code>/login</code>; redirect unauthenticated users.</li>
+          <li><code>/assets</code>: list, upload, visibility badge, copy URL / markdown.</li>
+          <li><code>/assets/$id</code>: detail, rename, visibility toggle, delete.</li>
+          <li><code>/settings/tokens</code>: create/revoke keys.</li>
+          <li>Use existing <code>@repo/ui</code> primitives; boring dashboard is fine.</li>
           <li>TanStack Query hooks for assets/tokens only talking to /api.</li>
         </ul>
       </div>
@@ -892,24 +852,20 @@ S3_FORCE_PATH_STYLE=true</pre>
             <code>bun run dev</code> (or optional compose services).
           </li>
           <li>
-            Prod: Dokploy compose/project with api + web + postgres + minio
-            (all-in-one first); document split-storage option.
+            Prod: Dokploy compose/project with api + web + postgres + minio (all-in-one first);
+            document split-storage option.
           </li>
-          <li>
-            Ensure bucket is private; only Hono public path is reachable.
-          </li>
-          <li>
-            Smoke staging: upload via curl with token; open URL; revoke in UI.
-          </li>
+          <li>Ensure bucket is private; only Hono public path is reachable.</li>
+          <li>Smoke staging: upload via curl with token; open URL; revoke in UI.</li>
         </ul>
       </div>
 
       <h2 id="structure">10. Target repo shape (pragmatic)</h2>
       <p class="muted">
-        Keep current package names. Grow folders toward the proposed layout
-        without a big rename PR.
+        Keep current package names. Grow folders toward the proposed layout without a big rename PR.
       </p>
-      <pre>apps/backend/src/
+      <pre>
+apps/backend/src/
   routes/
     health.ts          (exists)
     assets.ts          (new)
@@ -941,9 +897,8 @@ docker-compose.yml     # postgres + minio</pre>
 
       <p>
         Optional later: rename <code>backend</code>→<code>api</code>,
-        <code>frontend</code>→<code>web</code>; extract
-        <code>packages/db</code>; generate client from OpenAPI. None of these
-        block v1.
+        <code>frontend</code>→<code>web</code>; extract <code>packages/db</code>; generate client
+        from OpenAPI. None of these block v1.
       </p>
 
       <h2 id="out">11. Explicitly out of v1</h2>
@@ -959,31 +914,23 @@ docker-compose.yml     # postgres + minio</pre>
 
       <h2 id="done">12. Definition of done (v1)</h2>
       <ol>
-        <li>
-          Human can register/login in the web UI and upload an asset.
-        </li>
-        <li>
-          Human can create an API token and revoke it.
-        </li>
+        <li>Human can register/login in the web UI and upload an asset.</li>
+        <li>Human can create an API token and revoke it.</li>
         <li>
           Agent can upload with:
-          <pre style="margin-top: 0.4rem">curl -X POST "$BASE/api/assets" \
+          <pre style="margin-top: 0.4rem">
+curl -X POST "$BASE/api/assets" \
   -H "Authorization: Bearer $ASSET_TOKEN" \
   -F "file=@screenshot.png" \
   -F "visibility=public"</pre>
           and receive <code>url</code> + <code>markdown</code>.
         </li>
         <li>
-          Public URL <code>/a/:id</code> works without auth; private returns
-          401/403 without owner credentials.
+          Public URL <code>/a/:id</code> works without auth; private returns 401/403 without owner
+          credentials.
         </li>
-        <li>
-          Owner can change visibility or delete; public URL stops working after
-          delete.
-        </li>
-        <li>
-          <code>/api/docs</code> documents the asset and token endpoints.
-        </li>
+        <li>Owner can change visibility or delete; public URL stops working after delete.</li>
+        <li><code>/api/docs</code> documents the asset and token endpoints.</li>
         <li>
           <code>docker compose up</code> brings up Postgres + MinIO; local
           <code>bun run dev</code> runs api + web against them.
@@ -993,17 +940,15 @@ docker-compose.yml     # postgres + minio</pre>
       <div class="callout">
         <strong>Suggested next design pass (before coding Phase 3)</strong>
         <span class="muted"
-          >Lock exact OpenAPI schemas for Asset create/list responses, error
-          envelope, pagination, max upload size, and whether
-          <code>GET /a/:id</code> redirects or streams. That is the last
-          high-leverage design work before implementation.</span
+          >Lock exact OpenAPI schemas for Asset create/list responses, error envelope, pagination,
+          max upload size, and whether <code>GET /a/:id</code> redirects or streams. That is the
+          last high-leverage design work before implementation.</span
         >
       </div>
 
       <footer>
-        Generated from analysis of the current monorepo starter (Hono / Better
-        Auth / Prisma / React+Vite / TanStack / shadcn / Docker). Plan target:
-        Asset Vault v1.
+        Generated from analysis of the current monorepo starter (Hono / Better Auth / Prisma /
+        React+Vite / TanStack / shadcn / Docker). Plan target: Asset Vault v1.
       </footer>
     </main>
   </body>

@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "db:migrate": "APP_ENV=development prisma migrate deploy",
     "dev": "bun run --hot src/index.ts",
     "env:generate": "varlock codegen",
     "env:validate": "varlock load",
@@ -11,7 +12,6 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:validate": "APP_ENV=development prisma validate",
-    "db:migrate": "APP_ENV=development prisma migrate deploy",
     "start": "bun run db:migrate && bun run src/index.ts"
   },
   "dependencies": {

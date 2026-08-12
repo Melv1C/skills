@@ -19,14 +19,14 @@ function HomePage() {
         {isPending ? null : session?.user ? (
           <Link
             to="/assets"
-            className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-2 text-sm"
           >
             Open assets
           </Link>
         ) : (
           <Link
             to="/login"
-            className="rounded-md bg-primary px-3 py-2 text-sm text-primary-foreground hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-2 text-sm"
           >
             Sign in
           </Link>
