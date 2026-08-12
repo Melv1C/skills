@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@better-auth/api-key": "^1.6.27",
     "@repo/ui": "*",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-devtools": "latest",

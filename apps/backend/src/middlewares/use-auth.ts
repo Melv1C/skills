@@ -1,13 +1,21 @@
 import type { Context, Next } from "hono";
 
-import { auth } from "@/lib/auth";
+import { auth, headersWithApiKeySupport } from "@/lib/auth";
 import { logger } from "@/lib/logger";
 import { user$ } from "@/schemas";
 
 export const useAuth = async (c: Context, next: Next) => {
-  const sessionData = await auth.api.getSession({
-    headers: c.req.raw.headers,
-  });
+  let sessionData: Awaited<ReturnType<typeof auth.api.getSession>> = null;
+
+  try {
+    sessionData = await auth.api.getSession({
+      headers: headersWithApiKeySupport(c.req.raw.headers),
+    });
+  } catch (error) {
+    logger.warn("Failed to resolve session", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
 
   const user = sessionData?.user ? user$.safeParse(sessionData.user) : null;
 
@@ -26,7 +34,6 @@ export const isAuthenticated = async (c: Context, next: Next) => {
   const user = c.get("user");
 
   if (!user) {
-    logger.error("Authentication required but no user found");
     return c.json({ error: "Authentication required" }, 401);
   }
 
@@ -37,12 +44,10 @@ export const isAdmin = async (c: Context, next: Next) => {
   const user = c.get("user");
 
   if (!user) {
-    logger.error("Authentication required but no user found");
     return c.json({ error: "Authentication required" }, 401);
   }
 
   if (user.role !== "admin") {
-    logger.error("Admin role required but user is not an admin", { user });
     return c.json({ error: "Admin role required" }, 403);
   }
 
