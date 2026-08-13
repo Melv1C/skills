@@ -57,7 +57,5 @@ async function serveDocument(c: Context, id: string, versionRaw?: string, immuta
 }
 
 export const publicDocumentRoutes = new Hono()
-  .get("/:id/v/:n/raw", (c) => serveDocument(c, c.req.param("id"), c.req.param("n"), true))
   .get("/:id/v/:n", (c) => serveDocument(c, c.req.param("id"), c.req.param("n"), true))
-  .get("/:id/raw", (c) => serveDocument(c, c.req.param("id")))
   .get("/:id", (c) => serveDocument(c, c.req.param("id")));

@@ -40,7 +40,6 @@ export type Document = {
   versionCount: number;
   hasInlineScript: boolean;
   url: string;
-  rawUrl: string;
   versionUrl: string;
   createdAt: string;
   updatedAt: string;

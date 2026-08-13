@@ -20,7 +20,7 @@ function DocumentDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [description, setDescription] = useState<string | null>(null);
-  const [copied, setCopied] = useState<"url" | "raw" | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const documentQuery = useQuery({
     queryKey: ["documents", id],
@@ -70,11 +70,10 @@ function DocumentDetailPage() {
   const document = documentQuery.data;
   const currentDescription = description ?? document.description ?? "";
 
-  async function copy(kind: "url" | "raw") {
-    const value = kind === "url" ? document.url : document.rawUrl;
-    await navigator.clipboard.writeText(value);
-    setCopied(kind);
-    setTimeout(() => setCopied(null), 1500);
+  async function copyUrl() {
+    await navigator.clipboard.writeText(document.url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   }
 
   return (
@@ -116,16 +115,9 @@ function DocumentDetailPage() {
           <button
             type="button"
             className="border-border hover:bg-muted rounded-md border px-3 py-1.5 text-sm"
-            onClick={() => void copy("url")}
+            onClick={() => void copyUrl()}
           >
-            {copied === "url" ? "Copied URL" : "Copy URL"}
-          </button>
-          <button
-            type="button"
-            className="border-border hover:bg-muted rounded-md border px-3 py-1.5 text-sm"
-            onClick={() => void copy("raw")}
-          >
-            {copied === "raw" ? "Copied raw URL" : "Copy raw URL"}
+            {copied ? "Copied URL" : "Copy URL"}
           </button>
           <a
             href={document.url}

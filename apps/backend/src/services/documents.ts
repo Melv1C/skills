@@ -56,7 +56,6 @@ export type DocumentDto = {
   versionCount: number;
   hasInlineScript: boolean;
   url: string;
-  rawUrl: string;
   versionUrl: string;
   createdAt: string;
   updatedAt: string;
@@ -82,10 +81,6 @@ function documentUrl(id: string) {
   return `${publicBaseUrl()}/d/${id}`;
 }
 
-function documentRawUrl(id: string) {
-  return `${documentUrl(id)}/raw`;
-}
-
 function documentVersionUrl(id: string, version: number) {
   return `${documentUrl(id)}/v/${version}`;
 }
@@ -105,7 +100,6 @@ function toDocumentDto(document: Document, latest: VersionMeta): DocumentDto {
     versionCount: document.latestVersionNumber,
     hasInlineScript: latest.hasInlineScript,
     url,
-    rawUrl: documentRawUrl(document.id),
     versionUrl: documentVersionUrl(document.id, latest.versionNumber),
     createdAt: document.createdAt.toISOString(),
     updatedAt: document.updatedAt.toISOString(),
