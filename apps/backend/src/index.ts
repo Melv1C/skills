@@ -9,6 +9,7 @@ import { ENV } from "varlock/env";
 import { logger } from "./lib/logger";
 import { routes } from "./routes";
 import { publicAssetRoutes } from "./routes/public-asset";
+import { publicDocumentRoutes } from "./routes/public-document";
 import "./hono-context.types";
 
 const { printMetrics, registerMetrics } = prometheus();
@@ -25,6 +26,7 @@ const app = new Hono()
   .use("*", registerMetrics)
   .get("/metrics", printMetrics)
   .route("/a", publicAssetRoutes)
+  .route("/d", publicDocumentRoutes)
   .route("/api", routes);
 
 export type AppType = typeof app;
