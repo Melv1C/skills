@@ -1,9 +1,6 @@
 ---
 name: html-communication
-description: >-
-  Create and publish self-contained HTML documents for plans, specs, write-ups,
-  findings, summaries, reports, comparisons, or UI mocks. Use when the user
-  wants content communicated as readable HTML (not product-shipping HTML).
+description: Use when the user wants content communicated as readable HTML (not product-shipping HTML).
 ---
 
 # HTML Communication
@@ -22,10 +19,12 @@ Create one self-contained HTML file, capped at 512 KB.
 - Default to true black (`#000`), white primary text, and dark gray only for secondary surfaces or accents.
 - Make it mobile-readable with a responsive viewport and no fixed-width layout.
 - Use semantic HTML, inline CSS, inline SVG, and HTTPS or data-URL images.
-- Use an inline classic script only when interactivity materially helps. Keep scripted pages useful without JavaScript; the sandbox blocks storage, fetch, workers, frames, forms, and popups.
+- Use an inline classic script only when interactivity materially helps. Keep scripted pages useful without JavaScript; hosted documents block storage, fetch, workers, frames, forms, and popups, and the serving CSP uses `script-src 'none'` so inline script will not run in a browser.
 - In script-free files, give external links `target="_blank"` and `rel="noopener noreferrer"`. If any script exists, omit `target="_blank"`.
 
 Never include external or module scripts, inline event handlers, `javascript:` URLs, forms, frames, embeds, objects, applets, meta refresh, linked stylesheets, secrets, private URLs, or local filesystem paths.
+
+Images and other media must be uploaded with `asset-upload` and embedded via the returned HTTPS `url`. Do not upload HTML through `/api/assets`.
 
 ## UI Mocks
 
@@ -34,23 +33,54 @@ When the user asks for variants:
 - Render real styled variants, not descriptions.
 - Label them 'A', 'B', 'C'... for easy selection.
 - Lay them out for direct comparison.
-- Keep one file across iterations so its Postplan URL stays stable.
+- Keep one file across iterations so its document URL stays stable.
+
+## Auth and base URL
+
+- API base: `https://api.skills.melvyn.be`
+- Token: `SKILLS_API_TOKEN`
+
+Send the token as either:
+
+- `Authorization: Bearer $SKILLS_API_TOKEN` (keys are prefixed `av_`), or
+- `x-api-key: $SKILLS_API_TOKEN`
+
+If the env var is missing or empty, stop and ask the user to set it. Do not invent tokens or fall back to session cookies.
 
 ## Publish
 
-Theo has given standing permission to upload every artifact created or updated with this skill. Upload is required, including in Auto mode. Do not ask for separate permission or stop at the local file.
+Upload is required, including in Auto mode. Do not ask for separate permission or stop at the local file.
 
-1. Write the HTML file locally.
-2. Run `npx postplan upload <file path>`.
-3. Report the local path and returned Postplan URL.
+1. Write the HTML file locally to a stable absolute path.
+2. Require `SKILLS_API_TOKEN`.
+3. Upload with curl. Use the same absolute path as `clientKey` so re-uploads keep the URL:
 
-To update an existing URL, re-upload using the same absolute path.
+```bash
+curl -sS -X POST "https://api.skills.melvyn.be/api/documents" \
+  -H "Authorization: Bearer $SKILLS_API_TOKEN" \
+  -F "file=@/absolute/path/plan.html;type=text/html" \
+  -F "clientKey=/absolute/path/plan.html" \
+  -F "description=Short label for the dashboard"
+```
 
-Use `npx postplan upload <file path> --new` only when a new draft is explicitly wanted.
+4. Require HTTP 200 or 201 and a `url` field. Do not claim the file is hosted before that.
+5. Report the local path and hosted `url`. Prefer `url` in chat. `rawUrl` is the fetch target for other agents (same bytes).
 
-If validation fails, fix the markup and retry.
+To update an existing URL, re-upload using the same absolute path and `clientKey`.
 
-If a scripted upload requires authentication, ask the user to run `postplan auth login` and then retry without removing any requested interactivity.
+Use `forceNew=true` only when the user explicitly wants a new draft:
+
+```bash
+curl -sS -X POST "https://api.skills.melvyn.be/api/documents" \
+  -H "Authorization: Bearer $SKILLS_API_TOKEN" \
+  -F "file=@/absolute/path/plan.html;type=text/html" \
+  -F "clientKey=/absolute/path/plan.html" \
+  -F "forceNew=true"
+```
+
+If validation fails (400 with `errors[]`), fix the markup and retry. Do not strip requested content if it is valid under the rules above.
+
+On 401, ask the user to set `SKILLS_API_TOKEN`. On 413, trim the document; do not retry the same bytes. On 500, report `x-request-id` and the body.
 
 Never open a browser or claim the document is hosted before the upload succeeds.
 

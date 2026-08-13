@@ -12,6 +12,10 @@ Use this skill when a local file (screenshot, recording, image, PDF, log dump, e
 Never paste `file://` paths or rely on chat-only image attachments for durable
 links. Upload first, then embed the returned URL.
 
+HTML plans, specs, reviews, and mocks go through `/api/documents`
+(html-communication), not `/api/assets`. Assets remain media those HTML files
+embed.
+
 ## Auth and base URL
 
 - API base: `https://api.skills.melvyn.be`
@@ -74,7 +78,7 @@ Do not claim the file is hosted until this returns `201` with `url`.
 ### Visibility
 
 - **public** — anyone with the URL can fetch `/a/:id` (302 to a short-lived
-  signed object URL). Required for MR descriptions, Postplan HTML, and anything
+  signed object URL). Required for MR descriptions, hosted HTML documents, and anything
   shared without the API key.
 - **private** — fetch requires the same API key; do not use for embeds others
   must see.
@@ -84,7 +88,7 @@ Do not claim the file is hosted until this returns `201` with `url`.
 **Markdown (MR/PR):** paste `markdown` as-is, or write your own link using `url`.
 
 **HTML:** use `url` only (HTTPS). Example: `<img src="https://api.skills.melvyn.be/a/…" alt="…">`.
-Follow `html-communication` rules when the destination is a Postplan HTML doc.
+Follow `html-communication` rules when the destination is a hosted HTML document.
 
 ## Failures
 
