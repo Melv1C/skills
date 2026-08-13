@@ -13,6 +13,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AssetsIndexRouteImport } from './routes/assets/index'
 import { Route as AssetsIdRouteImport } from './routes/assets/$id'
+import { Route as DocumentsIndexRouteImport } from './routes/documents/index'
+import { Route as DocumentsIdRouteImport } from './routes/documents/$id'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsTokensRouteImport } from './routes/settings/tokens'
 
@@ -36,6 +38,16 @@ const AssetsIdRoute = AssetsIdRouteImport.update({
   path: '/assets/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocumentsIndexRoute = DocumentsIndexRouteImport.update({
+  id: '/documents/',
+  path: '/documents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocumentsIdRoute = DocumentsIdRouteImport.update({
+  id: '/documents/$id',
+  path: '/documents/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsIndexRoute = SettingsIndexRouteImport.update({
   id: '/settings/',
   path: '/settings/',
@@ -51,16 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/assets/$id': typeof AssetsIdRoute
+  '/documents/$id': typeof DocumentsIdRoute
   '/settings/tokens': typeof SettingsTokensRoute
   '/assets/': typeof AssetsIndexRoute
+  '/documents/': typeof DocumentsIndexRoute
   '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/assets/$id': typeof AssetsIdRoute
+  '/documents/$id': typeof DocumentsIdRoute
   '/settings/tokens': typeof SettingsTokensRoute
   '/assets': typeof AssetsIndexRoute
+  '/documents': typeof DocumentsIndexRoute
   '/settings': typeof SettingsIndexRoute
 }
 export interface FileRoutesById {
@@ -68,8 +84,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/assets/$id': typeof AssetsIdRoute
+  '/documents/$id': typeof DocumentsIdRoute
   '/settings/tokens': typeof SettingsTokensRoute
   '/assets/': typeof AssetsIndexRoute
+  '/documents/': typeof DocumentsIndexRoute
   '/settings/': typeof SettingsIndexRoute
 }
 export interface FileRouteTypes {
@@ -78,24 +96,30 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/assets/$id'
+    | '/documents/$id'
     | '/settings/tokens'
     | '/assets/'
+    | '/documents/'
     | '/settings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/assets/$id'
+    | '/documents/$id'
     | '/settings/tokens'
     | '/assets'
+    | '/documents'
     | '/settings'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/assets/$id'
+    | '/documents/$id'
     | '/settings/tokens'
     | '/assets/'
+    | '/documents/'
     | '/settings/'
   fileRoutesById: FileRoutesById
 }
@@ -103,8 +127,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   AssetsIdRoute: typeof AssetsIdRoute
+  DocumentsIdRoute: typeof DocumentsIdRoute
   SettingsTokensRoute: typeof SettingsTokensRoute
   AssetsIndexRoute: typeof AssetsIndexRoute
+  DocumentsIndexRoute: typeof DocumentsIndexRoute
   SettingsIndexRoute: typeof SettingsIndexRoute
 }
 
@@ -138,6 +164,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssetsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/documents/': {
+      id: '/documents/'
+      path: '/documents'
+      fullPath: '/documents/'
+      preLoaderRoute: typeof DocumentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/documents/$id': {
+      id: '/documents/$id'
+      path: '/documents/$id'
+      fullPath: '/documents/$id'
+      preLoaderRoute: typeof DocumentsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/': {
       id: '/settings/'
       path: '/settings'
@@ -159,8 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   AssetsIdRoute: AssetsIdRoute,
+  DocumentsIdRoute: DocumentsIdRoute,
   SettingsTokensRoute: SettingsTokensRoute,
   AssetsIndexRoute: AssetsIndexRoute,
+  DocumentsIndexRoute: DocumentsIndexRoute,
   SettingsIndexRoute: SettingsIndexRoute,
 }
 export const routeTree = rootRouteImport

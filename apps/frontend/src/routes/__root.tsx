@@ -32,6 +32,12 @@ function RootComponent() {
                     Assets
                   </Link>
                   <Link
+                    to="/documents"
+                    className="hover:text-foreground data-[status=active]:text-foreground"
+                  >
+                    Documents
+                  </Link>
+                  <Link
                     to="/settings/tokens"
                     className="hover:text-foreground data-[status=active]:text-foreground"
                   >
