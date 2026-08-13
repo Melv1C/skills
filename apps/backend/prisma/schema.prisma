@@ -24,6 +24,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   assets        Asset[]
+  documents     Document[]
 
   role       String?
   banned     Boolean?  @default(false)
@@ -135,4 +136,39 @@ model Asset {
 
   @@index([ownerId, createdAt])
   @@map("asset")
+}
+
+model Document {
+  id                  String            @id
+  ownerId             String
+  owner               User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  clientKey           String?
+  description         String?
+  title               String?
+  filename            String
+  visibility          Visibility        @default(PUBLIC)
+  latestVersionNumber Int               @default(1)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  versions            DocumentVersion[]
+
+  @@unique([ownerId, clientKey])
+  @@index([ownerId, updatedAt])
+  @@map("document")
+}
+
+model DocumentVersion {
+  id              String   @id
+  documentId      String
+  document        Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  versionNumber   Int
+  html            String
+  sha256          String
+  size            Int
+  hasInlineScript Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@unique([documentId, versionNumber])
+  @@index([documentId, createdAt])
+  @@map("document_version")
 }
