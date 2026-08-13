@@ -64,7 +64,7 @@ curl -sS -X POST "https://api.skills.melvyn.be/api/documents" \
 ```
 
 4. Require HTTP 200 or 201 and a `url` field. Do not claim the file is hosted before that.
-5. Report the local path and hosted `url`. Prefer `url` in chat. `rawUrl` is the fetch target for other agents (same bytes).
+5. Report the local path and hosted `url`.
 
 To update an existing URL, re-upload using the same absolute path and `clientKey`.
 
