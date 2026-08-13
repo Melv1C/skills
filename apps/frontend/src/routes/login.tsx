@@ -51,7 +51,7 @@ function LoginPage() {
         </h1>
         <p className="text-muted-foreground text-sm">
           <Link to="/" className="underline-offset-2 hover:underline">
-            Asset Vault
+            Skills
           </Link>
         </p>
       </div>

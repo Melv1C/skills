@@ -11,9 +11,9 @@ function HomePage() {
 
   return (
     <div className="mx-auto max-w-lg space-y-4 py-16 text-center">
-      <h1 className="text-3xl font-semibold tracking-tight">Asset Vault</h1>
+      <h1 className="text-3xl font-semibold tracking-tight">Skills</h1>
       <p className="text-muted-foreground">
-        Upload assets and HTML documents for humans and agents.
+        Host files, HTML documents, and tokens that humans and agents can use.
       </p>
       <div className="flex justify-center gap-3 pt-2">
         {isPending ? null : session?.user ? (
