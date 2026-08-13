@@ -13,7 +13,7 @@ Do not post review comments on the MR unless the user explicitly asks. Default o
 
 ## Related Skills
 
-- Read and follow `skills/html-communication/SKILL.md` for the HTML artifact and Postplan upload.
+- Read and follow `skills/html-communication/SKILL.md` for the HTML artifact and document upload.
 - Apply the defect-first review standards from the review-agent skill: concrete, actionable findings only; no style nits or speculation.
 
 ## Tooling
@@ -137,7 +137,7 @@ Include:
 - A scannable list of proposed comments, each with priority, `path:line`, title, and full comment body (copy-paste ready).
 - Link back to the MR URL.
 
-Upload with Postplan as required by html-communication. Report the local path and Postplan URL.
+Upload via html-communication (our documents API). Report the local path and hosted `url`.
 
 Do not include secrets, tokens, or the temp clone path in the published HTML.
 
@@ -156,7 +156,7 @@ Confirm cleanup in your reply. If cleanup fails, report the path so the user can
 - **Clone fails on both SSH and HTTPS**: Report both errors. Stop without fabricating a review.
 - **Fetch or diff fails**: Report the git error. Clean up the clone.
 - **Provider CLI fails**: Report the actual CLI output. Do not substitute search results or guess branch names.
-- **Postplan upload fails**: Fix HTML per html-communication validation rules and retry. Keep the clone only if you still need it for fixes; otherwise delete it once work is finished.
+- **Document upload fails**: Fix HTML per html-communication validation rules and retry. Keep the clone only if you still need it for fixes; otherwise delete it once work is finished.
 
 ## Optional: post comments
 

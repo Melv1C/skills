@@ -6,6 +6,7 @@ import { useAuth } from "@/middlewares/use-auth";
 import { useLogger } from "@/middlewares/use-logger";
 
 import { assetRoutes } from "./assets";
+import { documentRoutes } from "./documents";
 import { healthRoutes } from "./health";
 import { tokenRoutes } from "./tokens";
 
@@ -15,6 +16,7 @@ export const routes = new Hono()
   .use(useLogger)
   .route("/health", healthRoutes)
   .route("/assets", assetRoutes)
+  .route("/documents", documentRoutes)
   .route("/tokens", tokenRoutes)
   .onError((error, c) => {
     logger.error("Unhandled error occurred", {

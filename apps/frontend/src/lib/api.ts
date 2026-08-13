@@ -27,6 +27,38 @@ export type Token = {
 
 export type CreatedToken = Token & { key: string };
 
+export type Document = {
+  id: string;
+  description: string | null;
+  title: string | null;
+  filename: string;
+  visibility: "private" | "public";
+  clientKey: string | null;
+  size: number;
+  sha256: string;
+  version: number;
+  versionCount: number;
+  hasInlineScript: boolean;
+  url: string;
+  rawUrl: string;
+  versionUrl: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type DocumentVersion = {
+  version: number;
+  size: number;
+  sha256: string;
+  hasInlineScript: boolean;
+  createdAt: string;
+  url: string;
+};
+
+export type DocumentDetail = Document & {
+  versions: DocumentVersion[];
+};
+
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const headers = new Headers(init?.headers);
   if (!(init?.body instanceof FormData) && !headers.has("Content-Type")) {
@@ -79,4 +111,26 @@ export const tokensApi = {
       body: JSON.stringify({ name }),
     }),
   remove: (id: string) => api<{ success: boolean }>(`/api/tokens/${id}`, { method: "DELETE" }),
+};
+
+export const documentsApi = {
+  list: () => api<{ items: Document[]; nextCursor: string | null }>("/api/documents"),
+  get: (id: string) => api<DocumentDetail>(`/api/documents/${id}`),
+  upload: async (file: File, visibility: "private" | "public", description?: string) => {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("visibility", visibility);
+    if (description) form.append("description", description);
+    return api<Document>("/api/documents", { method: "POST", body: form });
+  },
+  uploadVersion: async (id: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return api<Document>(`/api/documents/${id}`, { method: "PUT", body: form });
+  },
+  update: (
+    id: string,
+    body: { filename?: string; visibility?: "private" | "public"; description?: string },
+  ) => api<Document>(`/api/documents/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  remove: (id: string) => api<{ success: true }>(`/api/documents/${id}`, { method: "DELETE" }),
 };

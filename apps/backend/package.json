@@ -11,7 +11,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:validate": "APP_ENV=development prisma validate",
-    "start": "bun run prisma:migrate && bun run src/index.ts"
+    "start": "bun run prisma:migrate && bun run src/index.ts",
+    "test": "bun test src"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1108.0",
@@ -25,6 +26,7 @@
     "better-auth": "^1.6.27",
     "dotenv": "^17.4.2",
     "hono": "^4.13.1",
+    "parse5": "^8.0.0",
     "pg": "^8.23.0",
     "ulid": "^3.0.2",
     "varlock": "^1.16.1",
