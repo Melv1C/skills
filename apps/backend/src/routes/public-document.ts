@@ -33,7 +33,8 @@ async function serveDocument(c: Context, id: string, versionRaw?: string, immuta
     return c.json({ error: "Document not found" }, 404);
   }
 
-  if (result.document.visibility !== "PUBLIC") {
+  const isPublic = result.document.visibility === "PUBLIC";
+  if (!isPublic) {
     const session = await auth.api.getSession({
       headers: headersWithApiKeySupport(c.req.raw.headers),
     });
@@ -42,12 +43,15 @@ async function serveDocument(c: Context, id: string, versionRaw?: string, immuta
     }
   }
 
+  const cacheControl =
+    isPublic && immutable ? "public, max-age=31536000, immutable" : "private, no-store";
+
   return c.body(result.version.html, 200, {
     "Content-Type": "text/html; charset=utf-8",
     "X-Content-Type-Options": "nosniff",
     "X-Skills-Document-Id": result.document.id,
     "X-Skills-Document-Version": String(result.version.versionNumber),
-    "Cache-Control": immutable ? "public, max-age=31536000, immutable" : "no-store",
+    "Cache-Control": cacheControl,
     "Content-Security-Policy": CSP,
   });
 }
