@@ -18,6 +18,11 @@ const versionMetaSelect = {
   createdAt: true,
 } satisfies Prisma.DocumentVersionSelect;
 
+const latestVersionSelect = {
+  ...versionMetaSelect,
+  html: true,
+} satisfies Prisma.DocumentVersionSelect;
+
 type VersionMeta = Pick<
   DocumentVersion,
   "versionNumber" | "size" | "sha256" | "hasInlineScript" | "createdAt"
@@ -62,6 +67,7 @@ export type DocumentDto = {
 };
 
 export type DocumentDetailDto = DocumentDto & {
+  html: string;
   versions: DocumentVersionDto[];
 };
 
@@ -388,7 +394,7 @@ export async function getOwnedDocument(input: {
     include: {
       versions: {
         orderBy: { versionNumber: "desc" },
-        select: versionMetaSelect,
+        select: latestVersionSelect,
       },
     },
   });
@@ -403,6 +409,7 @@ export async function getOwnedDocument(input: {
 
   return {
     ...toDocumentDto(document, latest),
+    html: latest.html,
     versions: document.versions.map((version) => toVersionDto(document.id, version)),
   };
 }

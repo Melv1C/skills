@@ -55,6 +55,7 @@ export type DocumentVersion = {
 };
 
 export type DocumentDetail = Document & {
+  html: string;
   versions: DocumentVersion[];
 };
 
