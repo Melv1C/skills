@@ -1,3 +1,4 @@
+import { Textarea } from "@repo/ui/components/ui/textarea";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
@@ -185,10 +186,9 @@ function DocumentDetailPage() {
             Save your changes as a new document version.
           </p>
         </div>
-        <textarea
+        <Textarea
           aria-label="HTML source"
-          className="border-input bg-background min-h-96 w-full resize-y rounded-md border px-3 py-2 font-mono text-xs"
-          rows={20}
+          className="min-h-96 resize-y font-mono text-xs"
           value={currentHtml}
           onChange={(e) => setHtml(e.target.value)}
           spellCheck={false}
