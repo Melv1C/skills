@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { documentsApi } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
@@ -20,12 +20,17 @@ function DocumentDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [description, setDescription] = useState<string | null>(null);
+  const [html, setHtml] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const documentQuery = useQuery({
     queryKey: ["documents", id],
     queryFn: () => documentsApi.get(id),
   });
+
+  useEffect(() => {
+    setHtml(documentQuery.data?.html ?? null);
+  }, [documentQuery.data?.html, documentQuery.data?.versionUrl]);
 
   const updateMutation = useMutation({
     mutationFn: (body: { description?: string; visibility?: "private" | "public" }) =>
@@ -38,6 +43,7 @@ function DocumentDetailPage() {
   const versionMutation = useMutation({
     mutationFn: (file: File) => documentsApi.uploadVersion(id, file),
     onSuccess: async () => {
+      setHtml(null);
       await queryClient.invalidateQueries({ queryKey: ["documents"] });
     },
   });
@@ -69,6 +75,7 @@ function DocumentDetailPage() {
 
   const document = documentQuery.data;
   const currentDescription = description ?? document.description ?? "";
+  const currentHtml = html ?? document.html;
 
   async function copyUrl() {
     await navigator.clipboard.writeText(document.url);
@@ -169,6 +176,34 @@ function DocumentDetailPage() {
         {versionMutation.isError ? (
           <p className="text-destructive text-sm">{(versionMutation.error as Error).message}</p>
         ) : null}
+      </section>
+
+      <section className="border-border space-y-3 rounded-lg border p-4">
+        <div>
+          <h2 className="text-sm font-medium">Edit HTML</h2>
+          <p className="text-muted-foreground text-sm">
+            Save your changes as a new document version.
+          </p>
+        </div>
+        <textarea
+          aria-label="HTML source"
+          className="border-input bg-background min-h-96 w-full resize-y rounded-md border px-3 py-2 font-mono text-xs"
+          rows={20}
+          value={currentHtml}
+          onChange={(e) => setHtml(e.target.value)}
+          spellCheck={false}
+        />
+        <button
+          type="button"
+          className="bg-primary text-primary-foreground rounded-md px-3 py-1.5 text-sm disabled:opacity-50"
+          disabled={versionMutation.isPending || currentHtml === document.html}
+          onClick={() => {
+            const file = new File([currentHtml], document.filename, { type: "text/html" });
+            versionMutation.mutate(file);
+          }}
+        >
+          {versionMutation.isPending ? "Saving…" : "Save as new version"}
+        </button>
       </section>
 
       <section className="border-border space-y-3 rounded-lg border p-4">
