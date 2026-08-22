@@ -15,30 +15,30 @@
     "test": "bun test src"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1108.0",
-    "@aws-sdk/s3-request-presigner": "^3.1108.0",
-    "@better-auth/api-key": "^1.6.27",
-    "@better-auth/prisma-adapter": "^1.6.27",
+    "@aws-sdk/client-s3": "^3.1116.0",
+    "@aws-sdk/s3-request-presigner": "^3.1116.0",
+    "@better-auth/api-key": "^1.7.1",
+    "@better-auth/prisma-adapter": "^1.7.1",
     "@hono/prometheus": "^1.0.3",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
     "@prisma/studio-core": "^0.33.0",
-    "better-auth": "^1.6.27",
+    "better-auth": "^1.7.1",
     "dotenv": "^17.4.2",
-    "hono": "^4.13.1",
-    "parse5": "^8.0.0",
+    "hono": "^4.13.3",
+    "parse5": "^8.0.1",
     "pg": "^8.23.0",
     "ulid": "^3.0.2",
-    "varlock": "^1.16.1",
+    "varlock": "^1.17.0",
     "winston": "^3.19.0",
     "winston-loki": "^6.1.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "@types/pg": "^8.21.0",
+    "@types/bun": "1.4.0",
+    "@types/pg": "^8.23.1",
     "prisma": "^7.9.1",
-    "prisma-zod-generator": "^3.1.0",
+    "prisma-zod-generator": "^3.3.1",
     "typescript": "^7.0.2"
   }
 }
