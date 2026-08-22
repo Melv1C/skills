@@ -1,0 +1,36 @@
+{
+  "name": "@melv1c/skills",
+  "version": "0.1.0",
+  "description": "CLI for authenticating against and uploading assets and HTML documents to api.skills.melvyn.be",
+  "bin": {
+    "melv1c-skills": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsdown && chmod +x dist/index.js",
+    "check-types": "tsc --noEmit",
+    "test": "bun test src"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/bun": "1.4.0",
+    "@types/node": "^26.2.0",
+    "tsdown": "^0.22.14",
+    "typescript": "7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

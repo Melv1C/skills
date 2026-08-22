@@ -12,6 +12,10 @@ Use this skill when a local file (screenshot, recording, image, PDF, log dump, e
 Never paste `file://` paths or rely on chat-only image attachments for durable
 links. Upload first, then embed the returned URL.
 
+If the `melv1c-skills` CLI is installed (or runnable via `npx @melv1c/skills`),
+prefer it over the curl examples below: `melv1c-skills assets push ./shot.png --public`.
+Keep curl as the fallback when the CLI is absent.
+
 HTML plans, specs, reviews, and mocks go through `/api/documents`
 (html-communication), not `/api/assets`. Assets remain media those HTML files
 embed.
