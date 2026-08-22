@@ -13,6 +13,11 @@ Do not use it for HTML that ships as part of a product.
 
 ## Document
 
+If the `melv1c-skills` CLI is installed (or runnable via `npx @melv1c/skills`),
+publish with `melv1c-skills docs publish file.html` instead of the curl call in
+`asset-upload`; it handles auth, clientKey, and error mapping. Keep curl as the
+fallback when the CLI is absent.
+
 Create one self-contained HTML file, capped at 512 KB.
 
 - Write it like a spec, not a landing page: dense, scannable, no hero, decorative chrome, marketing voice, or em dashes.
