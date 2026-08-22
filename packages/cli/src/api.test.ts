@@ -34,7 +34,7 @@ function jsonResponse(status: number, body: unknown, requestId?: string): Respon
 }
 
 describe("ApiClient", () => {
-  test("sends bearer auth to the right url", async () => {
+  test("sends api-key auth to the right url", async () => {
     installFetch();
     calls = [];
     responder = () => jsonResponse(200, { ok: true });

@@ -178,9 +178,8 @@ async function main(): Promise<number> {
     .command("rm")
     .argument("<id>")
     .description("delete a document by id")
-    .option("-f, --force", "accepted for symmetry; no confirmation prompt exists")
     .action(
-      run(async (id: string, options: { force?: boolean }) => {
+      run(async (id: string) => {
         await docsRemoveAction(id, globalOpts(program));
       }),
     );

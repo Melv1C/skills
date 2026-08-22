@@ -3,6 +3,7 @@ import path from "node:path";
 
 import type { ApiClient } from "../api";
 import { getClient, type CommandContextOptions } from "../context";
+import type { DocumentDto } from "../dto";
 import { CliError, messageOf } from "../errors";
 import { ExitCode } from "../exit-codes";
 import { HTML_MIME, isHtmlPath } from "../mime";
@@ -14,15 +15,6 @@ export interface PublishOptions extends CommandContextOptions {
   newDraft?: boolean;
   visibility?: "public" | "private";
   clientKey?: string;
-}
-
-interface DocumentDto {
-  id: string;
-  filename: string;
-  visibility: string;
-  url: string;
-  versionUrl: string;
-  version: number;
 }
 
 interface DocumentList {
@@ -78,12 +70,10 @@ export async function publishDocument(
 export async function docsPublishAction(files: string[], options: PublishOptions): Promise<void> {
   const client = await getClient(options);
   const published: DocumentDto[] = [];
-  const createdFlags: boolean[] = [];
   const verbose = !isJsonMode();
   for (const file of files) {
     const { document, created } = await publishDocument(client, file, options);
     published.push(document);
-    createdFlags.push(created);
     if (verbose) {
       printLine(
         `${file} → ${document.url} (${created ? "created" : "updated"}, v${document.version})`,

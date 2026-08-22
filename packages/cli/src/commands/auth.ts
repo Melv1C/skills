@@ -79,9 +79,9 @@ export async function logoutAction(): Promise<void> {
   printLine(removed ? `Removed ${tokenPath()}.` : "No stored key found. Nothing to do.");
 }
 
-export async function whoamiAction(options: { baseUrl?: string }): Promise<void> {
+export async function whoamiAction(options: { baseUrl?: string; token?: string }): Promise<void> {
   const baseUrl = resolveBaseUrl(options.baseUrl);
-  const resolved = await resolveTokenWithFile().catch(() => null);
+  const resolved = await resolveTokenWithFile(options.token).catch(() => null);
 
   if (!resolved) {
     throw new CliError(

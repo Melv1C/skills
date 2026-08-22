@@ -12,7 +12,7 @@ export function printErrorLine(text: string): void {
 }
 
 export function printJson(data: unknown): void {
-  process.stdout.write(`${JSON.stringify(data, null, 2)}\n`);
+  process.stdout.write(`${redact(JSON.stringify(data, null, 2))}\n`);
 }
 
 export function emit(data: unknown): void {
@@ -28,6 +28,6 @@ export function failWith(error: unknown): number {
     return error.exitCode;
   }
   const message = error instanceof Error ? (error.stack ?? error.message) : String(error);
-  printErrorLine(redact(message));
+  printErrorLine(message);
   return ExitCode.NETWORK;
 }

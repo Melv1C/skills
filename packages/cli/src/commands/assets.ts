@@ -5,6 +5,7 @@ import { createInterface } from "node:readline/promises";
 
 import type { ApiClient } from "../api";
 import { getClient, type CommandContextOptions } from "../context";
+import type { AssetDto } from "../dto";
 import { CliError, messageOf } from "../errors";
 import { ExitCode } from "../exit-codes";
 import { MAX_UPLOAD_BYTES, mimeFor } from "../mime";
@@ -14,15 +15,6 @@ import { emit, printLine } from "../printer";
 export interface UploadOptions extends CommandContextOptions {
   visibility?: "public" | "private";
   name?: string;
-}
-
-interface AssetDto {
-  id: string;
-  filename: string;
-  size: number;
-  visibility: string;
-  url: string;
-  markdown: string;
 }
 
 interface AssetList {
@@ -39,7 +31,7 @@ async function readUpload(file: string): Promise<{ bytes: Buffer; filename: stri
   }
 
   if (bytes.byteLength === 0) {
-    throw new CliError(`${file} is empty; refusing to upload.`, ExitCode.API);
+    throw new CliError(`${file} is empty; refusing to upload.`, ExitCode.USAGE);
   }
   if (bytes.byteLength > MAX_UPLOAD_BYTES) {
     throw new CliError(
@@ -73,7 +65,10 @@ export async function pushAsset(
 
   const { bytes, filename } = await readUpload(file);
   const form = new FormData();
-  form.append("file", new Blob([new Uint8Array(bytes)], { type: mime }), options.name ?? filename);
+  form.append("file", new Blob([new Uint8Array(bytes)], { type: mime }), filename);
+  if (options.name) {
+    form.append("filename", options.name);
+  }
   if (options.visibility) {
     form.append("visibility", options.visibility);
   }

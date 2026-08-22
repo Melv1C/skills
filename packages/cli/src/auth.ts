@@ -1,4 +1,4 @@
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import { chmod, mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import path from "node:path";
 
@@ -61,8 +61,10 @@ export async function resolveTokenWithFile(flagToken?: string): Promise<Resolved
 export async function storeToken(token: string): Promise<string> {
   const dir = configDir();
   await mkdir(dir, { recursive: true, mode: 0o700 });
+  await chmod(dir, 0o700).catch(() => {});
   const file = tokenPath();
   await writeFile(file, `${token}\n`, { mode: 0o600 });
+  await chmod(file, 0o600);
   return file;
 }
 
