@@ -1,5 +1,11 @@
 # backend
 
+## 1.2.1
+
+### Patch Changes
+
+- Fix ci
+
 ## 1.2.0
 
 ### Minor Changes
