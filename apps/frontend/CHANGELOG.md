@@ -1,5 +1,11 @@
 # frontend
 
+## 1.2.0
+
+### Minor Changes
+
+- 4495657: Add HTML document editing from the dashboard
+
 ## 1.1.1
 
 ### Patch Changes
