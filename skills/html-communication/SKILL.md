@@ -54,8 +54,8 @@ Upload is required, including in Auto mode. Do not ask for separate permission o
 For interactive local work, prefer the Skills CLI when it is installed:
 
 ```bash
-skills auth login
-skills document publish /absolute/path/plan.html --description "Short label for the dashboard"
+agent-tool auth login
+agent-tool document publish /absolute/path/plan.html --description "Short label for the dashboard"
 ```
 
 Use `--key /absolute/path/plan.html` when re-publishing the same local document should append a

@@ -8,7 +8,7 @@ export type AuthStore = {
 };
 
 export function authFilePath(): string {
-  return process.env.SKILLS_AUTH_FILE ?? join(homedir(), ".config", "skills", "auth.json");
+  return process.env.SKILLS_AUTH_FILE ?? join(homedir(), ".config", "agent-tool", "auth.json");
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

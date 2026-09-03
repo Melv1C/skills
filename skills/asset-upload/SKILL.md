@@ -15,10 +15,10 @@ links. Upload first, then embed the returned URL.
 ## CLI
 
 For interactive local work, prefer the Skills CLI when it is installed. Authenticate once with
-`skills auth login`, then upload with:
+`agent-tool auth login`, then upload with:
 
 ```bash
-skills asset upload /path/to/screenshot.png --visibility public
+agent-tool asset upload /path/to/screenshot.png --visibility public
 ```
 
 The CLI checks the saved token before using it and prints the hosted `url` and ready-made

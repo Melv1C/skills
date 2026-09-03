@@ -68,7 +68,7 @@ async function authSource(): Promise<AuthSource> {
   const storedToken = await readStoredToken();
   if (storedToken) return { kind: "stored", token: storedToken };
 
-  throw new Error("Not authenticated. Run `skills auth login` or set SKILLS_API_TOKEN.");
+  throw new Error("Not authenticated. Run `agent-tool auth login` or set SKILLS_API_TOKEN.");
 }
 
 async function checkToken(options: GlobalOptions, token: string): Promise<void> {
@@ -132,7 +132,7 @@ async function login(options: GlobalOptions, force: boolean): Promise<void> {
       return;
     } catch (error: unknown) {
       if (error instanceof ApiError && error.status === 401) {
-        throw new Error("Stored token is invalid. Run `skills auth login --force`.");
+        throw new Error("Stored token is invalid. Run `agent-tool auth login --force`.");
       }
       throw error;
     }
@@ -258,7 +258,7 @@ function visibility(value: string): Visibility {
 
 const program = new Command();
 program
-  .name("skills")
+  .name("agent-tool")
   .description("Authenticate with and publish files to Skills")
   .option("--base-url <url>", "API base URL", process.env.SKILLS_API_URL ?? DEFAULT_BASE_URL)
   .option("--allow-insecure-http", "Allow HTTP only for loopback development endpoints", false)
@@ -326,7 +326,7 @@ try {
   await program.parseAsync();
 } catch (error: unknown) {
   const message = error instanceof Error ? error.message : "Command failed";
-  process.stderr.write(`skills: ${message}\n`);
+  process.stderr.write(`agent-tool: ${message}\n`);
   if (error instanceof ApiError && error.requestId) {
     process.stderr.write(`Request ID: ${error.requestId}\n`);
   }

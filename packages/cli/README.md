@@ -1,4 +1,4 @@
-# Skills CLI
+# Agent Tool CLI
 
 Small CLI for authenticating with Skills and publishing assets or HTML documents.
 
@@ -13,7 +13,7 @@ npm install --global @melv1c/skills-cli
 Create an API token in the Skills dashboard, then run:
 
 ```text
-skills auth login
+agent-tool auth login
 Paste your token: ...
 ```
 
@@ -21,11 +21,11 @@ The CLI validates the token before saving it in the user config directory. If a 
 already saved, it prints `Already connected`. To replace it:
 
 ```bash
-skills auth login --force
+agent-tool auth login --force
 ```
 
 For CI, set `SKILLS_API_TOKEN` instead of storing a token on disk. Check or remove credentials with
-`skills auth status` and `skills auth logout`.
+`agent-tool auth status` and `agent-tool auth logout`.
 
 The CLI requires HTTPS for API requests. For a local loopback server only, pass
 `--allow-insecure-http` with the command.
@@ -33,9 +33,9 @@ The CLI requires HTTPS for API requests. For a local loopback server only, pass
 ## Publish
 
 ```bash
-skills asset upload ./screenshot.png
-skills document publish ./report.html --description "Weekly report"
-skills document publish ./report.html --key reports/weekly
+agent-tool asset upload ./screenshot.png
+agent-tool document publish ./report.html --description "Weekly report"
+agent-tool document publish ./report.html --key reports/weekly
 ```
 
 Both commands print the hosted URL. Add `--json` for scripting. Assets and documents are public by
