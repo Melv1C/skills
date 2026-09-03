@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "CLI for authenticating with and publishing to Skills",
   "bin": {
-    "agent-tool": "dist/index.js"
+    "agent-tools": "dist/index.js"
   },
   "files": [
     "dist"

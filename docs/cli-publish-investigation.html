@@ -286,16 +286,16 @@
 
       <h2>Recommended command surface</h2>
       <pre>
-agent-tool auth check
-agent-tool asset upload ./screenshot.png
-	agent-tool asset upload ./diagram.svg --visibility private --filename architecture.svg
-agent-tool document publish ./report.html --description "Weekly report"
-agent-tool document publish ./report.html --key reports/weekly --visibility public
-agent-tool document publish ./report.html --key reports/weekly --force-new
+agent-tools auth check
+agent-tools asset upload ./screenshot.png
+	agent-tools asset upload ./diagram.svg --visibility private --filename architecture.svg
+agent-tools document publish ./report.html --description "Weekly report"
+agent-tools document publish ./report.html --key reports/weekly --visibility public
+agent-tools document publish ./report.html --key reports/weekly --force-new
 
 # Automation
-agent-tool asset upload ./image.png --json
-agent-tool document publish ./report.html --json</pre>
+agent-tools asset upload ./image.png --json
+agent-tools document publish ./report.html --json</pre>
       <p>
         Use explicit nouns and verbs. Avoid a broad <code>deploy</code> command, project manifests,
         recursive directory uploads, or a local cache until real usage demonstrates a need for them.
@@ -364,13 +364,13 @@ agent-tool document publish ./report.html --json</pre>
         file with restrictive permissions. No password or Better Auth session cookie is needed.
       </p>
       <pre>
-agent-tool auth login
+agent-tools auth login
 Paste your token: ...
 
-agent-tool auth login
+agent-tools auth login
 Already connected
 
-agent-tool auth login --force
+agent-tools auth login --force
 Paste your token: ...</pre>
       <ol>
         <li>
@@ -385,15 +385,16 @@ Paste your token: ...</pre>
         </li>
         <li>
           With an invalid stored token, it reports <code>Stored token is invalid</code> and suggests
-          <code>agent-tool auth login --force</code> instead of silently replacing credentials.
+          <code>agent-tools auth login --force</code> instead of silently replacing credentials.
         </li>
         <li>
           With <code>--force</code>, always prompt for a replacement token and atomically overwrite
           the stored value only after validation succeeds.
         </li>
         <li>
-          Run <code>agent-tool auth status</code> or <code>agent-tool auth check</code> to validate
-          the stored token. Run <code>agent-tool auth logout</code> to remove the local copy.
+          Run <code>agent-tools auth status</code> or <code>agent-tools auth check</code> to
+          validate the stored token. Run <code>agent-tools auth logout</code> to remove the local
+          copy.
         </li>
       </ol>
       <p>
@@ -552,7 +553,7 @@ const response = await fetch(`${baseUrl}/api/documents`, {
       <h2>Failure and safety rules</h2>
       <ul>
         <li>
-          Missing auth: explain that <code>agent-tool auth login</code> or
+          Missing auth: explain that <code>agent-tools auth login</code> or
           <code>SKILLS_API_TOKEN</code> is required and exit non-zero.
         </li>
         <li>401: say the token is missing, invalid, expired, or revoked. Never echo it.</li>
