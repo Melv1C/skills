@@ -1,0 +1,59 @@
+name: Publish CLI
+
+on:
+  push:
+    tags:
+      - "@melv1c/skills-cli@*"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Build, test, and publish CLI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Verify release tag
+        working-directory: packages/cli
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          PACKAGE_NAME=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).name")
+          PACKAGE_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('package.json', 'utf8')).version")
+          EXPECTED_TAG="${PACKAGE_NAME}@${PACKAGE_VERSION}"
+          if [ "$RELEASE_TAG" != "$EXPECTED_TAG" ]; then
+            echo "Expected tag $EXPECTED_TAG, received $RELEASE_TAG"
+            exit 1
+          fi
+
+      - name: Check CLI types
+        run: bun run --cwd packages/cli check-types
+
+      - name: Test CLI
+        run: bun run --cwd packages/cli test
+
+      - name: Build CLI
+        run: bun run --cwd packages/cli build
+
+      - name: Publish package
+        working-directory: packages/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --workspaces=false --access public --provenance

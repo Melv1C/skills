@@ -37,5 +37,8 @@ jobs:
       - name: Build all packages
         run: bun run build
 
+      - name: Test CLI
+        run: bun run --cwd packages/cli test
+
       - name: Check (Format, Lint, Type Check)
         run: bun run check
