@@ -42,6 +42,12 @@ Both commands print the hosted URL. Add `--json` for scripting. Assets and docum
 default because they are intended for hosted HTML and shared reports. Use `--visibility private` when
 the result must remain private.
 
+Read a hosted document with:
+
+```bash
+agent-tools document read https://api.skills.melvyn.be/d/01...
+```
+
 ## Release
 
 The repository publishes this package from GitHub Actions when a Changesets release tag such as

@@ -5,12 +5,12 @@ description: Use when the user provides a hosted HTML document URL from the skil
 
 # HTML Document Read
 
-Fetch the uploaded HTML with the shell. Do not use web search or a browser.
+Read the hosted HTML with the Skills CLI. Do not use web search or a browser.
 
 URLs look like `https://api.skills.melvyn.be/d/:id` with optional `/v/:n`.
 
 1. Remove a trailing slash.
-2. Run `curl --fail --silent --show-error --location --max-time 30 --output /tmp/document.html '<url>'`.
-3. Read `/tmp/document.html` and continue the user's request from its contents.
+2. Run `agent-tools document read '<url>'`.
+3. Read the command output and continue the user's request from its contents.
 
-If `curl` fails, report its actual status or network error. Do not substitute search results.
+If the CLI fails, report its actual status or network error. Do not substitute search results.

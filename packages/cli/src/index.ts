@@ -7,7 +7,12 @@ import { stdin, stdout } from "node:process";
 import { Command } from "commander";
 
 import { authFilePath, readStoredToken, removeStoredToken, writeStoredToken } from "./auth-store";
-import { ApiError, requestJson, UPLOAD_REQUEST_TIMEOUT_MS } from "./client";
+import {
+  ApiError,
+  DEFAULT_REQUEST_TIMEOUT_MS,
+  requestJson,
+  UPLOAD_REQUEST_TIMEOUT_MS,
+} from "./client";
 
 const DEFAULT_BASE_URL = "https://api.skills.melvyn.be";
 type Visibility = "public" | "private";
@@ -165,6 +170,29 @@ async function logout(): Promise<void> {
   }
 }
 
+async function readDocument(documentUrl: string): Promise<void> {
+  let parsed: URL;
+  try {
+    parsed = new URL(documentUrl);
+  } catch {
+    throw new Error("Document URL must be a valid HTTPS Skills document URL");
+  }
+
+  const isDocumentPath = /^\/d\/[^/]+(?:\/v\/\d+)?\/?$/.test(parsed.pathname);
+  if (parsed.protocol !== "https:" || parsed.hostname !== new URL(DEFAULT_BASE_URL).hostname) {
+    throw new Error("Document URL must use the HTTPS Skills document host");
+  }
+  if (!isDocumentPath) {
+    throw new Error("Document URL must match https://api.skills.melvyn.be/d/:id");
+  }
+
+  const response = await fetch(parsed, {
+    signal: AbortSignal.timeout(DEFAULT_REQUEST_TIMEOUT_MS),
+  });
+  if (!response.ok) throw new Error(`Document request failed (HTTP ${response.status})`);
+  stdout.write(await response.text());
+}
+
 function mimeType(filePath: string): string {
   const types: Record<string, string> = {
     ".avif": "image/avif",
@@ -298,6 +326,10 @@ assetCommand
   );
 
 const documentCommand = program.command("document").description("Manage HTML documents");
+documentCommand
+  .command("read <url>")
+  .description("Read a hosted HTML document")
+  .action((documentUrl: string) => readDocument(documentUrl));
 documentCommand
   .command("publish <file>")
   .description("Publish an HTML document")
