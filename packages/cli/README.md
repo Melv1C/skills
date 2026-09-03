@@ -27,6 +27,9 @@ skills auth login --force
 For CI, set `SKILLS_API_TOKEN` instead of storing a token on disk. Check or remove credentials with
 `skills auth status` and `skills auth logout`.
 
+The CLI requires HTTPS for API requests. For a local loopback server only, pass
+`--allow-insecure-http` with the command.
+
 ## Publish
 
 ```bash

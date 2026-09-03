@@ -52,7 +52,8 @@ export async function writeStoredToken(token: string, filePath = authFilePath())
 export async function removeStoredToken(filePath = authFilePath()): Promise<void> {
   try {
     await unlink(filePath);
-  } catch {
-    // The desired state is absence, including when the file is already gone.
+  } catch (error: unknown) {
+    if (isRecord(error) && error.code === "ENOENT") return;
+    throw error;
   }
 }

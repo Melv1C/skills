@@ -39,4 +39,11 @@ describe("auth store", () => {
 
     expect(await readStoredToken(filePath)).toBeNull();
   });
+
+  test("does not hide token removal errors", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "skills-cli-"));
+    temporaryDirectories.push(directory);
+
+    expect(removeStoredToken(directory)).rejects.toBeDefined();
+  });
 });

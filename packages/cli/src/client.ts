@@ -11,6 +11,9 @@ export class ApiError extends Error {
   }
 }
 
+export const DEFAULT_REQUEST_TIMEOUT_MS = 30_000;
+export const UPLOAD_REQUEST_TIMEOUT_MS = 5 * 60_000;
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
@@ -42,6 +45,7 @@ export async function requestJson(input: {
   token: string;
   path: string;
   init?: RequestInit;
+  timeoutMs?: number;
   fetcher?: Fetcher;
 }): Promise<unknown> {
   const baseUrl = input.baseUrl.replace(/\/+$/, "");
@@ -52,10 +56,14 @@ export async function requestJson(input: {
   }
 
   const fetcher = input.fetcher ?? fetch;
+  const timeoutSignal = AbortSignal.timeout(input.timeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS);
+  const signal = input.init?.signal
+    ? AbortSignal.any([input.init.signal, timeoutSignal])
+    : timeoutSignal;
   const response = await fetcher(`${baseUrl}${input.path}`, {
     ...input.init,
     headers,
-    signal: AbortSignal.timeout(30_000),
+    signal,
   }).catch((error: unknown) => {
     const message = error instanceof Error ? error.message : "Network request failed";
     throw new ApiError(message);

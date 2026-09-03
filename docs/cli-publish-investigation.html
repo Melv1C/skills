@@ -221,10 +221,9 @@
         <strong>Decision.</strong> Build a single package with five focused auth and publishing
         commands: <code>auth login</code>, <code>auth status</code>, <code>auth logout</code>, plus
         <code>asset upload</code> and <code>document publish</code>. Let login receive a token from
-        a hidden prompt, stdin, an environment variable, or an explicitly supplied option. Use
-        Commander for parsing and help, the runtime's built-in <code>fetch</code>,
-        <code>FormData</code>, <code>Blob</code>, and filesystem APIs for transport, and support
-        <code>--json</code> for automation.
+        a hidden prompt or an environment variable. Use Commander for parsing and help, the
+        runtime's built-in <code>fetch</code>, <code>FormData</code>, <code>Blob</code>, and
+        filesystem APIs for transport, and support <code>--json</code> for automation.
       </div>
 
       <h2>What exists today</h2>
@@ -316,6 +315,11 @@ skills document publish ./report.html --json</pre>
             <td><code>--base-url &lt;url&gt;</code></td>
             <td>Override the API for staging or local development.</td>
             <td><code>https://api.skills.melvyn.be</code></td>
+          </tr>
+          <tr>
+            <td><code>--allow-insecure-http</code></td>
+            <td>Allow an HTTP base URL only when it points to loopback development.</td>
+            <td>Off.</td>
           </tr>
           <tr>
             <td><code>--visibility &lt;value&gt;</code></td>
@@ -508,8 +512,8 @@ const response = await fetch(`${baseUrl}/api/documents`, {
             <td>Token input and storage</td>
             <td>Yes</td>
             <td>
-              Prompt, read stdin or an environment variable, optionally accept a flagged value,
-              validate, and persist with restrictive permissions.
+              Prompt or read an environment variable, validate, and persist with restrictive
+              permissions.
             </td>
           </tr>
           <tr>

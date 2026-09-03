@@ -7,11 +7,11 @@ import { stdin, stdout } from "node:process";
 import { Command } from "commander";
 
 import { authFilePath, readStoredToken, removeStoredToken, writeStoredToken } from "./auth-store";
-import { ApiError, requestJson } from "./client";
+import { ApiError, requestJson, UPLOAD_REQUEST_TIMEOUT_MS } from "./client";
 
 const DEFAULT_BASE_URL = "https://api.skills.melvyn.be";
 type Visibility = "public" | "private";
-type GlobalOptions = { baseUrl: string };
+type GlobalOptions = { allowInsecureHttp: boolean; baseUrl: string };
 type JsonOptions = { json: boolean };
 type AuthSource = { kind: "environment" | "stored"; token: string };
 
@@ -26,20 +26,47 @@ function stringField(value: unknown, field: string): string {
   return value[field];
 }
 
+function isLoopbackHostname(hostname: string): boolean {
+  const normalized = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (normalized === "localhost" || normalized === "::1") return true;
+
+  const parts = normalized.split(".");
+  return (
+    parts.length === 4 &&
+    parts[0] === "127" &&
+    parts.slice(1).every((part) => /^\d+$/.test(part) && Number(part) <= 255)
+  );
+}
+
 function baseUrl(options: GlobalOptions): string {
   const value = options.baseUrl.trim();
-  if (!/^https?:\/\//i.test(value)) {
-    throw new Error("Base URL must start with http:// or https://");
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    throw new Error("Base URL must be a valid HTTPS URL");
   }
-  return value;
+
+  if (parsed.protocol === "https:") return value;
+  if (
+    parsed.protocol === "http:" &&
+    options.allowInsecureHttp &&
+    isLoopbackHostname(parsed.hostname)
+  ) {
+    return value;
+  }
+
+  throw new Error(
+    "Base URL must use HTTPS. HTTP is allowed only for loopback development with --allow-insecure-http.",
+  );
 }
 
 async function authSource(): Promise<AuthSource> {
-  const storedToken = await readStoredToken();
-  if (storedToken) return { kind: "stored", token: storedToken };
-
   const environmentToken = process.env.SKILLS_API_TOKEN?.trim();
   if (environmentToken) return { kind: "environment", token: environmentToken };
+
+  const storedToken = await readStoredToken();
+  if (storedToken) return { kind: "stored", token: storedToken };
 
   throw new Error("Not authenticated. Run `skills auth login` or set SKILLS_API_TOKEN.");
 }
@@ -71,19 +98,24 @@ async function promptHidden(label: string): Promise<string> {
     };
 
     const onData = (chunk: Buffer | string) => {
-      const input = String(chunk);
-      if (input === "\u0003") {
-        cleanup();
-        stdout.write("\n");
-        reject(new Error("Login cancelled"));
-      } else if (input === "\r" || input === "\n") {
-        cleanup();
-        stdout.write("\n");
-        resolve(value.trim());
-      } else if (input === "\u007f") {
-        value = value.slice(0, -1);
-      } else {
-        value += input;
+      for (const character of String(chunk)) {
+        if (character === "\u0003") {
+          cleanup();
+          stdout.write("\n");
+          reject(new Error("Login cancelled"));
+          return;
+        }
+        if (character === "\r" || character === "\n") {
+          cleanup();
+          stdout.write("\n");
+          resolve(value.trim());
+          return;
+        }
+        if (character === "\u007f") {
+          value = value.slice(0, -1);
+        } else {
+          value += character;
+        }
       }
     };
 
@@ -178,6 +210,7 @@ async function uploadAsset(
     token: source.token,
     path: "/api/assets",
     init: { method: "POST", body: await formFor(filePath, fields) },
+    timeoutMs: UPLOAD_REQUEST_TIMEOUT_MS,
   });
   const url = stringField(payload, "url");
   const markdown =
@@ -228,6 +261,7 @@ program
   .name("skills")
   .description("Authenticate with and publish files to Skills")
   .option("--base-url <url>", "API base URL", process.env.SKILLS_API_URL ?? DEFAULT_BASE_URL)
+  .option("--allow-insecure-http", "Allow HTTP only for loopback development endpoints", false)
   .showHelpAfterError();
 
 const authCommand = program.command("auth").description("Manage CLI authentication");
