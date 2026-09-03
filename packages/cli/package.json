@@ -1,0 +1,32 @@
+{
+  "name": "@melv1c/skills-cli",
+  "version": "0.1.0",
+  "description": "CLI for authenticating with and publishing to Skills",
+  "bin": {
+    "skills": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "bun build src/index.ts --target=node --outfile=dist/index.js",
+    "check-types": "tsc --noEmit",
+    "lint": "oxlint src",
+    "test": "bun test src"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
+  "devDependencies": {
+    "@types/bun": "1.4.0",
+    "@types/node": "^26.4.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

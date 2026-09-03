@@ -12,6 +12,20 @@ Use this skill when a local file (screenshot, recording, image, PDF, log dump, e
 Never paste `file://` paths or rely on chat-only image attachments for durable
 links. Upload first, then embed the returned URL.
 
+## CLI
+
+For interactive local work, prefer the Skills CLI when it is installed. Authenticate once with
+`skills auth login`, then upload with:
+
+```bash
+skills asset upload /path/to/screenshot.png --visibility public
+```
+
+The CLI checks the saved token before using it and prints the hosted `url` and ready-made
+`markdown`. It also honors `SKILLS_API_TOKEN`, which is the preferred credential source for agents
+and CI. Keep the curl flow below as the fallback when the CLI is unavailable or when debugging the
+raw API request.
+
 HTML plans, specs, reviews, and mocks go through `/api/documents`
 (html-communication), not `/api/assets`. Assets remain media those HTML files
 embed.

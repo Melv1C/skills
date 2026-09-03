@@ -51,6 +51,17 @@ If the env var is missing or empty, stop and ask the user to set it. Do not inve
 
 Upload is required, including in Auto mode. Do not ask for separate permission or stop at the local file.
 
+For interactive local work, prefer the Skills CLI when it is installed:
+
+```bash
+skills auth login
+skills document publish /absolute/path/plan.html --description "Short label for the dashboard"
+```
+
+Use `--key /absolute/path/plan.html` when re-publishing the same local document should append a
+version at the same URL. The CLI uses its saved token or `SKILLS_API_TOKEN`. For agent runs where
+the token is already available in the environment, curl remains the direct fallback below.
+
 1. Write the HTML file locally to a stable absolute path.
 2. Require `SKILLS_API_TOKEN`.
 3. Upload with curl. Use the same absolute path as `clientKey` so re-uploads keep the URL:

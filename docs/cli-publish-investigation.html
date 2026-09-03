@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CLI for Skills auth and publishing</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #000;
+        --surface: #111;
+        --surface-2: #181818;
+        --line: #303030;
+        --text: #f4f4f4;
+        --muted: #aaa;
+        --accent: #d9ff58;
+        --warning: #ffd166;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          15px/1.55 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      main {
+        width: min(100% - 32px, 980px);
+        margin: 0 auto;
+        padding: 42px 0 64px;
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        max-width: 760px;
+        margin: 0 0 14px;
+        font-size: clamp(32px, 6vw, 58px);
+      }
+      h2 {
+        margin: 44px 0 14px;
+        font-size: 25px;
+      }
+      h3 {
+        margin: 24px 0 8px;
+        font-size: 17px;
+      }
+      p {
+        max-width: 760px;
+        margin: 8px 0;
+      }
+      a {
+        color: var(--accent);
+      }
+      .eyebrow {
+        margin: 0 0 12px;
+        color: var(--accent);
+        font:
+          700 12px/1.2 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          monospace;
+        letter-spacing: 0.11em;
+        text-transform: uppercase;
+      }
+      .lede {
+        color: #d5d5d5;
+        font-size: 18px;
+        max-width: 740px;
+      }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 24px 0 0;
+      }
+      .tag {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        padding: 4px 10px;
+        font-size: 12px;
+      }
+      .tag.recommended {
+        border-color: #667c1d;
+        color: var(--accent);
+      }
+      .callout {
+        margin: 22px 0;
+        padding: 16px 18px;
+        border-left: 3px solid var(--accent);
+        background: var(--surface);
+      }
+      .callout.warning {
+        border-left-color: var(--warning);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .card {
+        padding: 16px;
+        border: 1px solid var(--line);
+        background: var(--surface);
+      }
+      .card h3 {
+        margin-top: 0;
+      }
+      .card p {
+        color: var(--muted);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0;
+        background: var(--surface);
+      }
+      th,
+      td {
+        padding: 11px 12px;
+        border: 1px solid var(--line);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        color: var(--accent);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      td code,
+      p code,
+      li code {
+        color: #f6e99c;
+      }
+      pre {
+        overflow-x: auto;
+        margin: 12px 0;
+        padding: 15px 16px;
+        border: 1px solid var(--line);
+        background: #0b0b0b;
+        color: #e9e9e9;
+        font:
+          13px/1.55 ui-monospace,
+          SFMono-Regular,
+          Menlo,
+          Consolas,
+          monospace;
+      }
+      ul,
+      ol {
+        max-width: 760px;
+        padding-left: 22px;
+      }
+      li {
+        margin: 7px 0;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .small {
+        font-size: 13px;
+      }
+      .status {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      footer {
+        margin-top: 48px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      @media (max-width: 680px) {
+        main {
+          width: min(100% - 22px, 980px);
+          padding-top: 28px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+        }
+        th,
+        td {
+          padding: 9px 8px;
+        }
+        table {
+          font-size: 13px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Investigation / 03 Sep 2026</p>
+      <h1>A small CLI for Skills auth and publishing</h1>
+      <p class="lede">
+        The shortest useful path is a thin command-line client around the API that already exists.
+        Let <code>auth login</code> accept an API token, validate it, and store it locally. Upload
+        assets and HTML with native web APIs, then print the returned URL.
+      </p>
+      <div class="meta">
+        <span class="tag recommended">Recommendation: build v1</span>
+        <span class="tag">One runtime dependency: Commander</span>
+        <span class="tag">Token login with secure local storage</span>
+      </div>
+
+      <div class="callout">
+        <strong>Decision.</strong> Build a single package with five focused auth and publishing
+        commands: <code>auth login</code>, <code>auth status</code>, <code>auth logout</code>, plus
+        <code>asset upload</code> and <code>document publish</code>. Let login receive a token from
+        a hidden prompt, stdin, an environment variable, or an explicitly supplied option. Use
+        Commander for parsing and help, the runtime's built-in <code>fetch</code>,
+        <code>FormData</code>, <code>Blob</code>, and filesystem APIs for transport, and support
+        <code>--json</code> for automation.
+      </div>
+
+      <h2>What exists today</h2>
+      <p>
+        The deployed API is already a good CLI boundary. It accepts API keys in either
+        <code>Authorization: Bearer av_...</code> or <code>x-api-key</code>. The live health check
+        and authenticated asset and document list checks both returned successfully during this
+        investigation.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Current API</th>
+            <th>CLI implication</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Check authentication</td>
+            <td><code>GET /api/assets</code> requires auth</td>
+            <td>Use as a cheap authenticated probe; do not print the key.</td>
+          </tr>
+          <tr>
+            <td>Upload media</td>
+            <td>
+              <code>POST /api/assets</code>, multipart <code>file</code>, optional
+              <code>visibility</code> and <code>filename</code>
+            </td>
+            <td>Return <code>url</code> and <code>markdown</code>.</td>
+          </tr>
+          <tr>
+            <td>Publish HTML</td>
+            <td>
+              <code>POST /api/documents</code>, multipart <code>file</code>, optional
+              <code>clientKey</code>, <code>description</code>, <code>visibility</code>,
+              <code>forceNew</code>
+            </td>
+            <td>Return the stable document URL. A repeated key appends a version.</td>
+          </tr>
+          <tr>
+            <td>Replace a document</td>
+            <td><code>PUT /api/documents/:id</code></td>
+            <td>Optional explicit update command; v1 can rely on <code>clientKey</code>.</td>
+          </tr>
+          <tr>
+            <td>Manage keys</td>
+            <td><code>GET/POST/DELETE /api/tokens</code>; creation is session-authenticated</td>
+            <td>Keep key creation in the dashboard for v1.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout warning">
+        <strong>Important current behavior.</strong> Documents default to public, but newly created
+        assets default to private in the backend. Hosted HTML and shared reports need public assets,
+        so <code>asset upload</code> should default to <code>public</code> and expose an explicit
+        private option.
+      </div>
+
+      <h2>Recommended command surface</h2>
+      <pre>
+skills auth check
+skills asset upload ./screenshot.png
+	skills asset upload ./diagram.svg --visibility private --filename architecture.svg
+skills document publish ./report.html --description "Weekly report"
+	skills document publish ./report.html --key reports/weekly --visibility public
+skills document publish ./report.html --key reports/weekly --force-new
+
+# Automation
+skills asset upload ./image.png --json
+skills document publish ./report.html --json</pre>
+      <p>
+        Use explicit nouns and verbs. Avoid a broad <code>deploy</code> command, project manifests,
+        recursive directory uploads, or a local cache until real usage demonstrates a need for them.
+      </p>
+
+      <h3>Minimal options</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Purpose</th>
+            <th>Default</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>--base-url &lt;url&gt;</code></td>
+            <td>Override the API for staging or local development.</td>
+            <td><code>https://api.skills.melvyn.be</code></td>
+          </tr>
+          <tr>
+            <td><code>--visibility &lt;value&gt;</code></td>
+            <td>
+              Set <code>public</code> or <code>private</code> visibility without an interactive
+              question.
+            </td>
+            <td>Public for assets and documents.</td>
+          </tr>
+          <tr>
+            <td><code>--filename &lt;name&gt;</code></td>
+            <td>Override the server display name.</td>
+            <td>Local basename.</td>
+          </tr>
+          <tr>
+            <td><code>--description &lt;text&gt;</code></td>
+            <td>Set document metadata.</td>
+            <td>Unset.</td>
+          </tr>
+          <tr>
+            <td><code>--key &lt;key&gt;</code></td>
+            <td>Make document publishing repeatable and versioned.</td>
+            <td>Unset, which creates a new document.</td>
+          </tr>
+          <tr>
+            <td><code>--force-new</code></td>
+            <td>Detach the key from the previous document and create a fresh one.</td>
+            <td>Off.</td>
+          </tr>
+          <tr>
+            <td><code>--json</code></td>
+            <td>Print the complete API response for scripts.</td>
+            <td>Human-readable URL summary.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Auth: pass and store an API token</h2>
+      <p>
+        The existing API-key flow is enough for the CLI. <code>auth login</code> should accept a
+        token, validate it against an authenticated endpoint, and store the token in a user-level
+        file with restrictive permissions. No password or Better Auth session cookie is needed.
+      </p>
+      <pre>
+skills auth login
+Paste your token: ...
+
+skills auth login
+Already connected
+
+skills auth login --force
+Paste your token: ...</pre>
+      <ol>
+        <li>
+          With no stored token, <code>auth login</code> shows a hidden
+          <code>Paste your token:</code>
+          prompt, validates the token, and stores it only after authentication succeeds.
+        </li>
+        <li>
+          With a valid stored token, it validates the token and prints
+          <code>Already connected</code>
+          without prompting.
+        </li>
+        <li>
+          With an invalid stored token, it reports <code>Stored token is invalid</code> and suggests
+          <code>skills auth login --force</code> instead of silently replacing credentials.
+        </li>
+        <li>
+          With <code>--force</code>, always prompt for a replacement token and atomically overwrite
+          the stored value only after validation succeeds.
+        </li>
+        <li>
+          Run <code>skills auth status</code> or <code>skills auth check</code> to validate the
+          stored token. Run <code>skills auth logout</code> to remove the local copy.
+        </li>
+      </ol>
+      <p>
+        The CLI can still honor <code>SKILLS_API_TOKEN</code> directly for CI and agents without
+        storing it. Local logout removes the stored copy only and does not revoke the remote API
+        key. Remote creation and revocation remain in the dashboard for v1.
+      </p>
+
+      <h2>Implementation shape</h2>
+      <div class="grid">
+        <section class="card">
+          <h3>One small package</h3>
+          <p>
+            Add one CLI package to the existing workspace. Its public executable should be exposed
+            through the package's <code>bin</code> field. Keep API DTOs local to the client until a
+            shared public API package is actually needed.
+          </p>
+        </section>
+        <section class="card">
+          <h3>One API helper</h3>
+          <p>
+            Centralize base URL resolution, auth headers, multipart requests, JSON error parsing,
+            status handling, and output formatting. Commands should mostly validate arguments, read
+            a file, call the helper, and print.
+          </p>
+        </section>
+        <section class="card">
+          <h3>Native multipart</h3>
+          <p>
+            Read bytes from disk, create a <code>Blob</code> with the detected MIME type, append it
+            to <code>FormData</code>, and let <code>fetch</code> set the multipart boundary. No
+            upload SDK is required.
+          </p>
+        </section>
+        <section class="card">
+          <h3>Small token store</h3>
+          <p>
+            Keep a single JSON file under the user's config directory, create its directory with
+            mode <code>0700</code>, and write the file with mode <code>0600</code>. Remove it on
+            logout. Do not store passwords. A stored API token is a secret and must never be logged.
+          </p>
+        </section>
+      </div>
+
+      <h3>Illustrative request logic</h3>
+      <pre>
+const form = new FormData();
+form.append("file", new Blob([await readFile(file)], { type }), basename(file));
+form.append("visibility", visibility);
+if (key) form.append("clientKey", key);
+
+const response = await fetch(`${baseUrl}/api/documents`, {
+  method: "POST",
+  headers: { Authorization: `Bearer ${token}` },
+  body: form,
+});</pre>
+      <p class="small muted">
+        The server remains the source of truth for HTML policy, maximum size, hashing, title
+        extraction, and document versioning. Duplicating those checks in the CLI would make the
+        client larger and create drift.
+      </p>
+
+      <h2>Commander is a good fit</h2>
+      <p>
+        Commander covers subcommands, positional arguments, options, help generation, and usage
+        errors in a small, familiar API. That is enough structure for this command surface, and it
+        avoids writing and maintaining a custom argument parser. Keep it as the only CLI-specific
+        dependency.
+      </p>
+      <p class="small">
+        Reference:
+        <a
+          href="https://github.com/tj/commander.js#readme"
+          target="_blank"
+          rel="noopener noreferrer"
+          >Commander.js README</a
+        >. For executable packaging and the workspace's existing runtime, see
+        <a href="https://bun.com/docs/pm/bunx" target="_blank" rel="noopener noreferrer"
+          >Bun package executables</a
+        >
+        and
+        <a href="https://bun.com/docs/runtime" target="_blank" rel="noopener noreferrer"
+          >Bun runtime documentation</a
+        >.
+      </p>
+
+      <h2>What must be built</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Work item</th>
+            <th>Required for v1</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CLI package and executable entry point</td>
+            <td>Yes</td>
+            <td>Package metadata, <code>bin</code>, build output, Node shebang, publish files.</td>
+          </tr>
+          <tr>
+            <td>Commander command definitions</td>
+            <td>Yes</td>
+            <td>
+              Login, status/check, logout, asset upload, document publish, shared help, and
+              unknown-option errors.
+            </td>
+          </tr>
+          <tr>
+            <td>HTTP and multipart client</td>
+            <td>Yes</td>
+            <td>Native APIs, API-key header, timeout, structured error handling.</td>
+          </tr>
+          <tr>
+            <td>Token input and storage</td>
+            <td>Yes</td>
+            <td>
+              Prompt, read stdin or an environment variable, optionally accept a flagged value,
+              validate, and persist with restrictive permissions.
+            </td>
+          </tr>
+          <tr>
+            <td>Tests</td>
+            <td>Yes</td>
+            <td>
+              Mock <code>fetch</code>; cover auth missing, 401, 400 validation, 413, 500, and
+              successful URL output.
+            </td>
+          </tr>
+          <tr>
+            <td>Backend endpoint changes</td>
+            <td>No</td>
+            <td>Upload and document versioning already work through the current API.</td>
+          </tr>
+          <tr>
+            <td>API identity endpoint</td>
+            <td>No</td>
+            <td>
+              Useful later for a better <code>auth check</code>, but not needed for a status probe.
+            </td>
+          </tr>
+          <tr>
+            <td>Email/password or browser login</td>
+            <td>No</td>
+            <td>Defer Better Auth session and OAuth flows; the API token is the CLI credential.</td>
+          </tr>
+          <tr>
+            <td>OpenAPI or generated client</td>
+            <td>No</td>
+            <td>More infrastructure than this three-command client needs.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Failure and safety rules</h2>
+      <ul>
+        <li>
+          Missing auth: explain that <code>skills auth login</code> or
+          <code>SKILLS_API_TOKEN</code> is required and exit non-zero.
+        </li>
+        <li>401: say the token is missing, invalid, expired, or revoked. Never echo it.</li>
+        <li>400: print the API's safe error and validation details, if present.</li>
+        <li>413: tell the user which limit was exceeded. Do not retry unchanged bytes.</li>
+        <li>
+          500 or network timeout: show status and request ID when supplied. Do not automatically
+          retry uploads, because asset creation is not idempotent.
+        </li>
+        <li>
+          Use public visibility when a URL will be embedded in hosted HTML. A private asset cannot
+          be fetched by readers without the API key.
+        </li>
+        <li>
+          Do not put the token in command arguments. Arguments can leak through shell history and
+          process listings; use the hidden prompt or <code>SKILLS_API_TOKEN</code> instead.
+        </li>
+      </ul>
+
+      <h2>Phased delivery</h2>
+      <ol>
+        <li>
+          <strong>Prototype:</strong> add the package, Commander, shared API helper, token
+          login/logout, auth status, and the two upload commands.
+        </li>
+        <li>
+          <strong>Confidence:</strong> add fetch-mocked tests and run the commands against a staging
+          base URL with a disposable key.
+        </li>
+        <li>
+          <strong>Distribution:</strong> build JavaScript for Node 20+, publish the package, and
+          document installation plus the one required environment variable.
+        </li>
+        <li>
+          <strong>Skill integration:</strong> simplify the asset and HTML skill instructions to
+          prefer the CLI for local files, while retaining curl as the fallback and debugging path.
+        </li>
+        <li>
+          <strong>Later:</strong> add <code>list</code>, <code>delete</code>, explicit document
+          updates, remote token lifecycle commands, and Better Auth session login only when usage
+          warrants them.
+        </li>
+      </ol>
+
+      <div class="callout">
+        <strong>Bottom line.</strong> The MVP is still mostly client packaging and request plumbing.
+        A token-based <code>auth login</code> is simpler than a password session flow: accept the
+        token safely, validate it, store it securely, and reuse it for uploads. Commander keeps the
+        command tree clean; no upload library, generated SDK, or backend redesign is necessary.
+      </div>
+
+      <footer>
+        Prepared from the current workspace implementation and a live authenticated API probe. No
+        credential values are included in this document.
+      </footer>
+    </main>
+  </body>
+</html>
