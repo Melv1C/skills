@@ -1,6 +1,6 @@
 {
   "name": "@melv1c/skills-cli",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "CLI for authenticating with and publishing to Skills",
   "bin": {
     "agent-tools": "dist/index.js"

@@ -54,6 +54,4 @@ jobs:
 
       - name: Publish package
         working-directory: packages/cli
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --workspaces=false --access public --provenance
