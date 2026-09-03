@@ -12,57 +12,44 @@ Use this skill when a local file (screenshot, recording, image, PDF, log dump, e
 Never paste `file://` paths or rely on chat-only image attachments for durable
 links. Upload first, then embed the returned URL.
 
-HTML plans, specs, reviews, and mocks go through `/api/documents`
-(html-communication), not `/api/assets`. Assets remain media those HTML files
-embed.
+## CLI
 
-## Auth and base URL
+Authenticate once, then upload with:
 
-- API base: `https://api.skills.melvyn.be`
-- Token: `SKILLS_API_TOKEN`
+```bash
+agent-tools auth login
+agent-tools asset upload /path/to/screenshot.png --visibility public
+```
 
-Send the token as either:
-
-- `Authorization: Bearer $SKILLS_API_TOKEN` (keys are prefixed `av_`), or
-- `x-api-key: $SKILLS_API_TOKEN`
-
-If the env var is missing or empty, stop and ask the user to set it. Do not
-invent tokens or fall back to session cookies.
+The CLI checks the saved token before uploading and prints the hosted `url` and ready-made
+`markdown`.
 
 ## Upload
 
-`POST /api/assets` with multipart form fields:
+Use the CLI flags to control the upload:
 
-| Field        | Required | Notes                                      |
-| ------------ | -------- | ------------------------------------------ |
-| `file`       | yes      | The binary (`@path` with curl)             |
-| `visibility` | no       | `public` (default for embeds) or `private` |
-| `filename`   | no       | Override display name                      |
+```bash
+agent-tools asset upload /path/to/file \
+  --visibility public \
+  --filename display-name.png
+```
+
+`--visibility` accepts `public` or `private` and defaults to `public`. `--filename` overrides the
+display name. Add `--json` when a script needs the complete response.
 
 Default max size: 50 MiB.
 
-### Curl
+The CLI selects a MIME type from the file extension and uses a binary fallback for unknown types.
 
-```bash
-curl -sS -X POST "https://api.skills.melvyn.be/api/assets" \
-  -H "Authorization: Bearer $SKILLS_API_TOKEN" \
-  -F "file=@/path/to/screenshot.png;type=image/png" \
-  -F "visibility=public" \
-  -F "filename=screenshot.png"
-```
+### Success
 
-Set `type=` to the real MIME type when known (`image/png`, `image/jpeg`,
-`video/mp4`, `video/webm`, `application/pdf`, …).
-
-### Success (201)
-
-Use these response fields:
+On success, use the CLI output:
 
 - `url` — stable public path (`…/a/<id>`). Prefer this in HTML `src` / `href`.
 - `markdown` — ready-made `![name](url)` for images, or `[name](url)` otherwise.
   Prefer this in MR/PR markdown bodies.
 
-Example:
+With `--json`, the output includes the complete response. A typical result contains:
 
 ```json
 {
@@ -73,40 +60,24 @@ Example:
 }
 ```
 
-Do not claim the file is hosted until this returns `201` with `url`.
+Do not claim the file is hosted until the command succeeds and returns a `url`.
 
 ### Visibility
 
-- **public** — anyone with the URL can fetch `/a/:id` (302 to a short-lived
-  signed object URL). Required for MR descriptions, hosted HTML documents, and anything
-  shared without the API key.
-- **private** — fetch requires the same API key; do not use for embeds others
-  must see.
+- **public** — anyone with the URL can fetch the asset. Required for MR descriptions, hosted HTML
+  documents, and anything shared without authentication.
+- **private** — readers need access to the Skills account. Do not use it for embeds others must see.
 
 ## Embed
 
-**Markdown (MR/PR):** paste `markdown` as-is, or write your own link using `url`.
+**Markdown (MR/PR):** paste the CLI's `markdown` output as-is, or write your own link using `url`.
 
 **HTML:** use `url` only (HTTPS). Example: `<img src="https://api.skills.melvyn.be/a/…" alt="…">`.
 Follow `html-communication` rules when the destination is a hosted HTML document.
 
 ## Failures
 
-| Status | Meaning                         | Action                                      |
-| ------ | ------------------------------- | ------------------------------------------- |
-| 401    | Missing/invalid token           | Check env var; ask user to refresh the key  |
-| 400    | Missing `file` / bad visibility | Fix the multipart fields and retry          |
-| 413    | Over max upload size            | Compress/split; do not retry the same bytes |
-| 500    | Storage/server fault            | Report `x-request-id` and the error body    |
-
-## Optional follow-ups
-
-```bash
-# List own assets
-curl -sS -H "Authorization: Bearer $SKILLS_API_TOKEN" \
-  "https://api.skills.melvyn.be/api/assets"
-
-# Delete
-curl -sS -X DELETE -H "Authorization: Bearer $SKILLS_API_TOKEN" \
-  "https://api.skills.melvyn.be/api/assets/<id>"
-```
+- 401: run `agent-tools auth login --force` and retry.
+- 400: correct the file or CLI options and retry.
+- 413: compress or split the file. Do not retry the same bytes.
+- 500 or a network failure: report the error and request ID shown by the CLI.

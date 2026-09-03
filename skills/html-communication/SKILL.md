@@ -24,7 +24,7 @@ Create one self-contained HTML file, capped at 512 KB.
 
 Never include external or module scripts, inline event handlers, `javascript:` URLs, forms, frames, embeds, objects, applets, meta refresh, linked stylesheets, secrets, private URLs, or local filesystem paths.
 
-Images and other media must be uploaded with `asset-upload` and embedded via the returned HTTPS `url`. Do not upload HTML through `/api/assets`.
+Images and other media must be uploaded with `asset-upload` and embedded via the returned HTTPS `url`.
 
 ## UI Mocks
 
@@ -35,53 +35,31 @@ When the user asks for variants:
 - Lay them out for direct comparison.
 - Keep one file across iterations so its document URL stays stable.
 
-## Auth and base URL
-
-- API base: `https://api.skills.melvyn.be`
-- Token: `SKILLS_API_TOKEN`
-
-Send the token as either:
-
-- `Authorization: Bearer $SKILLS_API_TOKEN` (keys are prefixed `av_`), or
-- `x-api-key: $SKILLS_API_TOKEN`
-
-If the env var is missing or empty, stop and ask the user to set it. Do not invent tokens or fall back to session cookies.
-
 ## Publish
 
 Upload is required, including in Auto mode. Do not ask for separate permission or stop at the local file.
 
+Authenticate once, then publish through the CLI:
+
+```bash
+agent-tools auth login
+agent-tools document publish /absolute/path/plan.html --description "Short label for the dashboard"
+```
+
+Use `--key` when re-publishing should append a version at the same URL. Use `--force-new` only
+when a new draft is explicitly requested.
+
 1. Write the HTML file locally to a stable absolute path.
-2. Require `SKILLS_API_TOKEN`.
-3. Upload with curl. Use the same absolute path as `clientKey` so re-uploads keep the URL:
+2. Run `agent-tools document publish`.
+3. Require a successful CLI response with a hosted `url` before claiming the document is online.
+4. Report the local path and hosted `url`.
+
+To read a hosted document, run:
 
 ```bash
-curl -sS -X POST "https://api.skills.melvyn.be/api/documents" \
-  -H "Authorization: Bearer $SKILLS_API_TOKEN" \
-  -F "file=@/absolute/path/plan.html;type=text/html" \
-  -F "clientKey=/absolute/path/plan.html" \
-  -F "description=Short label for the dashboard"
+agent-tools document read https://api.skills.melvyn.be/d/:id
 ```
 
-4. Require HTTP 200 or 201 and a `url` field. Do not claim the file is hosted before that.
-5. Report the local path and hosted `url`.
-
-To update an existing URL, re-upload using the same absolute path and `clientKey`.
-
-Use `forceNew=true` only when the user explicitly wants a new draft:
-
-```bash
-curl -sS -X POST "https://api.skills.melvyn.be/api/documents" \
-  -H "Authorization: Bearer $SKILLS_API_TOKEN" \
-  -F "file=@/absolute/path/plan.html;type=text/html" \
-  -F "clientKey=/absolute/path/plan.html" \
-  -F "forceNew=true"
-```
-
-If validation fails (400 with `errors[]`), fix the markup and retry. Do not strip requested content if it is valid under the rules above.
-
-On 401, ask the user to set `SKILLS_API_TOKEN`. On 413, trim the document; do not retry the same bytes. On 500, report `x-request-id` and the body.
-
-Never open a browser or claim the document is hosted before the upload succeeds.
-
-Do not verify in a browser unless the user asks.
+If the CLI reports a 401, run `agent-tools auth login --force`. For a 413, trim the document and
+retry. For a 500, report the request ID and error shown by the CLI. Never open a browser or claim
+the document is hosted before publishing succeeds.
