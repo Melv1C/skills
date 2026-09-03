@@ -24,7 +24,7 @@ Create one self-contained HTML file, capped at 512 KB.
 
 Never include external or module scripts, inline event handlers, `javascript:` URLs, forms, frames, embeds, objects, applets, meta refresh, linked stylesheets, secrets, private URLs, or local filesystem paths.
 
-Images and other media must be uploaded with `asset-upload` and embedded via the returned HTTPS `url`. Do not upload HTML through `/api/assets`.
+Images and other media must be uploaded with `asset-upload` and embedded via the returned HTTPS `url`.
 
 ## UI Mocks
 
