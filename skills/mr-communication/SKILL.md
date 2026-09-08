@@ -35,27 +35,6 @@ Before publication:
 
 For optional dynamic fields other than `MODEL`, use `unknown` or omit the affected sentence when appropriate.
 
-## Review summary format
-
-For a top-level review summary, use this shape unless the caller specifies different content:
-
-```text
-> [!NOTE]
-> 🤖 **Responded by <MODEL>**
-
-Review summary
-
-Spec: <count> finding(s).
-
-Standards: <count> finding(s).
-
-Validation run:
-
-- <check>: <result>.
-```
-
-Preserve the actual blank lines.
-
 ## Message construction
 
 Before sending, inspect the composed body as text and verify:
