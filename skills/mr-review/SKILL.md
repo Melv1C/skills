@@ -9,7 +9,7 @@ Review the change, not the author. Inspect the diff, validate the behavior that 
 
 ## Contract
 
-The request contains a GitLab merge-request URL or GitHub pull-request URL. Do not modify the existing checkout, create commits, push branches, approve, merge, or submit a platform review object. The permitted external writes are the finding comments and final summary required by this skill.
+The request contains a GitLab merge-request URL or GitHub pull-request URL. Do not modify the existing checkout, create commits, push branches, approve, merge, or submit a platform review object. The permitted external writes are one comment per finding, or one non-resolvable comment when the review produced no findings.
 
 ## Workflow
 
@@ -84,11 +84,11 @@ For each finding, capture:
 - supporting requirement, contract, test result, or minimal code trace;
 - smallest corrective direction.
 
-### 4. Publish the report
+### 4. Publish findings
 
 Read and follow skills/mr-communication/SKILL.md for every publication. It owns the attribution header, active model identity, provider commands, inline location data, deduplication, and delivery semantics. Do not reproduce or override those rules here.
 
-Publish one message per finding. Give mr-communication the structured path and line/range, not only a location in prose. Use an inline diff discussion/comment when the location is on the changed source branch. Publish an unanchored top-level note only when the issue is genuinely file-independent. Never silently turn a requested inline report into a global note.
+If there are findings, publish one message per finding. Give mr-communication the structured path and line/range, not only a location in prose. Use an inline diff discussion/comment when the location is on the changed source branch. Publish an unanchored top-level note only when the issue is genuinely file-independent. Never silently turn a requested inline report into a global note.
 
 Finding bodies should be concise:
 
@@ -100,13 +100,15 @@ Finding bodies should be concise:
 
     Suggested direction: <smallest corrective direction.>
 
-Always publish one final non-resolvable summary through mr-communication.
+Those finding messages are the complete publication set.
+
+If there are no findings, publish one global non-resolvable comment through mr-communication to indicate that the review produced no findings.
 
 Do not claim completion until every required publication has been accepted by the platform.
 
 ### 5. Clean up
 
-Remove the temporary clone after the report is written and all publications are accepted, or after a hard failure once the repository is no longer needed. If cleanup fails, report the path so it can be removed manually.
+Remove the temporary clone after all publications are accepted, or after a hard failure once the repository is no longer needed. If cleanup fails, report the path so it can be removed manually.
 
 ## Failure report
 
