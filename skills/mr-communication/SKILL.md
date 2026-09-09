@@ -54,6 +54,8 @@ Always target the intended repository explicitly with `-R/--repo` when repositor
 
 For self-hosted GitLab, use the target host consistently for host-aware API commands.
 
+Pass the note body on stdin so attribution and markdown stay intact. `--file` and `--line` locate the comment on the diff; they are not the message. `-m "$(cat comment.md)"` also works. If `glab` rejects a flag, run `glab mr note create --help` and use the flags that version documents.
+
 ### Comment on a particular line
 
 Use `glab mr note create` with `--file` and `--line`.
@@ -63,7 +65,7 @@ glab mr note create <mr> \
   -R "https://<host>/<project-path>" \
   --file <path> \
   --line <line> \
-  --message-file <message-file>
+  < comment.md
 ```
 
 Example:
@@ -73,7 +75,7 @@ glab mr note create 123 \
   -R "https://gitlab.example.com/group/project" \
   --file src/main.go \
   --line 42 \
-  --message-file /tmp/comment.md
+  < /tmp/comment.md
 ```
 
 For a multiline range:
@@ -83,7 +85,7 @@ glab mr note create <mr> \
   -R "<repository-url>" \
   --file <path> \
   --line <start>:<end> \
-  --message-file <message-file>
+  < comment.md
 ```
 
 For a removed line, use `--old-line` instead:
@@ -93,7 +95,7 @@ glab mr note create <mr> \
   -R "<repository-url>" \
   --file <path> \
   --old-line <line> \
-  --message-file <message-file>
+  < comment.md
 ```
 
 `--file` targets the latest merge request diff version.
@@ -124,7 +126,7 @@ Then reply with:
 glab mr note create <mr> \
   -R "<repository-url>" \
   --reply <discussion-id> \
-  --message-file <message-file>
+  < comment.md
 ```
 
 `--reply` accepts either:
@@ -144,7 +146,7 @@ Use a non-resolvable note for review summaries, automation/status messages, or o
 glab mr note create <mr> \
   -R "<repository-url>" \
   --resolvable=false \
-  --message-file <message-file>
+  < comment.md
 ```
 
 This is the preferred GitLab operation for a global review summary.
