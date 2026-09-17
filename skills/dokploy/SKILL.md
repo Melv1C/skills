@@ -11,8 +11,8 @@ Use this skill to create, configure, deploy, inspect, start, stop or redeploy ap
 
 Dokploy requires:
 
-* `DOKPLOY_URL`
-* `DOKPLOY_API_TOKEN`
+- `DOKPLOY_URL`
+- `DOKPLOY_API_TOKEN`
 
 Resolution order:
 
@@ -301,10 +301,10 @@ Never invent undocumented request fields. For uncommon Dokploy operations, inspe
 
 Error handling:
 
-* `400`: return the Dokploy validation error.
-* `401`: authentication is missing or invalid.
-* `403`: insufficient permissions.
-* `404`: requested resource was not found.
-* `5xx`: report the Dokploy/server error and do not claim success.
+- `400`: return the Dokploy validation error.
+- `401`: authentication is missing or invalid.
+- `403`: insufficient permissions.
+- `404`: requested resource was not found.
+- `5xx`: report the Dokploy/server error and do not claim success.
 
 Never expose credentials in error messages or logs.
