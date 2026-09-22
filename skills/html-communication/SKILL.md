@@ -1,15 +1,15 @@
 ---
 name: html-communication
-description: Use when the user wants content communicated as readable HTML (not product-shipping HTML).
+description: Use only when the user explicitly asked for HTML or a hosted document URL.
 ---
 
 # HTML Communication
 
 ## When to Use
 
-Use this skill when the user wants a plan, spec, write-up, findings, summary, report, comparison, or set of UI mocks presented as readable HTML.
+Use this skill only when the user explicitly asked for HTML or a hosted document URL.
 
-Do not use it for HTML that ships as part of a product.
+Product HTML that ships in an app is out of scope.
 
 ## Document
 
