@@ -13,9 +13,9 @@ Live install is `~/.t3` (not `~/Library/Application Support`). History is
 `~/.t3/userdata/server-runtime.json` (often `http://127.0.0.1:3773`).
 
 Read model: `projection_projects`, `projection_threads`,
-`projection_thread_messages`, `projection_turns`. Soft-deleted rows have
-`deleted_at`. Copy `project_id` and `model_selection_json` from a sibling
-thread.
+`projection_thread_messages`, `projection_turns`. Soft-deleted projects and
+threads have `deleted_at`; select messages and turns by those live `thread_id`s.
+Copy `project_id` and `model_selection_json` from a sibling thread.
 
 SQLite reads need no session. HTTP does:
 
