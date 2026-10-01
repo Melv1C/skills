@@ -1,13 +1,13 @@
 ---
 name: asset-upload
-description: Use when you need to attach media to an MR/PR description, HTML document, review report, or any write-up that must link hosted files instead of local paths. Or when the user asks to upload a file.
+description: Upload files to the Skills asset service for hosted HTML documents or write-ups outside GitLab and GitHub. Use when a standalone hosted file URL is needed or the user explicitly requests this service.
 ---
 
-# Asset Upload
+# Upload a hosted asset
 
-## When to Use
+## When to use
 
-Use this skill when a local file (screenshot, recording, image, PDF, log dump, etc.) must appear in something others can open: MR/PR descriptions, HTML artifacts, review reports, comments. Or when the user asks to upload a file.
+Use this skill when a local file must be hosted for an HTML document or a write-up outside GitLab and GitHub, or when the user explicitly requests the Skills asset service. For screenshots and recordings in GitLab merge requests or GitHub pull requests, use `mr-assets`.
 
 Never paste `file://` paths or rely on chat-only image attachments for durable
 links. Upload first, then embed the returned URL.
@@ -45,9 +45,9 @@ The CLI selects a MIME type from the file extension and uses a binary fallback f
 
 On success, use the CLI output:
 
-- `url` — stable public path (`…/a/<id>`). Prefer this in HTML `src` / `href`.
-- `markdown` — ready-made `![name](url)` for images, or `[name](url)` otherwise.
-  Prefer this in MR/PR markdown bodies.
+- `url` is the stable hosted path (`…/a/<id>`). Prefer this in HTML `src` / `href`.
+- `markdown` is ready-made `![name](url)` for images, or `[name](url)` otherwise.
+  Use it in Markdown write-ups.
 
 With `--json`, the output includes the complete response. A typical result contains:
 
@@ -64,13 +64,14 @@ Do not claim the file is hosted until the command succeeds and returns a `url`.
 
 ### Visibility
 
-- **public** — anyone with the URL can fetch the asset. Required for MR descriptions, hosted HTML
-  documents, and anything shared without authentication.
-- **private** — readers need access to the Skills account. Do not use it for embeds others must see.
+- **public** lets anyone with the URL fetch the asset. Required for hosted HTML documents and
+  anything shared without authentication.
+- **private** requires readers to have access to the Skills account. Do not use it for embeds
+  others must see.
 
 ## Embed
 
-**Markdown (MR/PR):** paste the CLI's `markdown` output as-is, or write your own link using `url`.
+**Markdown:** paste the CLI's `markdown` output as-is, or write your own link using `url`.
 
 **HTML:** use `url` only (HTTPS). Example: `<img src="https://api.skills.melvyn.be/a/…" alt="…">`.
 Follow `html-communication` rules when the destination is a hosted HTML document.
